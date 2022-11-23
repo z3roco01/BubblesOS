@@ -20,8 +20,9 @@ all: $(TARGET)
 
 $(TARGET): linker.ld $(ASOBJS) $(COBJS)
 	$(CC) $(COBJS) isr.o -o $(KERN_TARG) $(CFLAGS) -T $(LINKSCRIPT)
-	nasm -fbin boot.s -o boot.o
-	cat boot.o kernel.bin > $(TARGET)
+	nasm -fbin boot.s -o $(TARGET)
+	mcopy -i $(TARGET) $(KERN_TARG) "::kernel.bin"
+	#cat boot.o kernel.bin > $(TARGET)
 
 $(COBJS): $(CSRC)
 	$(CC) $(CFLAGS) -c $(CSRC)
