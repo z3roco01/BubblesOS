@@ -12,7 +12,7 @@ ASOBJS=$(subst .s,.o,$(ASSRC))
 
 KERN_TARG=kernel.bin
 
-TARGET=BublesOS.img
+TARGET=BubblesOS.img
 
 LINKSCRIPT=linker.ld
 
