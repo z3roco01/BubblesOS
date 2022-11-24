@@ -1,3 +1,4 @@
+#include "ata.h"
 #include "ports.h"
 #include "term.h"
 #include "pic.h"
@@ -18,7 +19,12 @@ void kmain() {
     termPrint(".");
 
     kbdInit();
+
+    termPrint(".");
+
+    termPrintHex(ataIdentify());
     termPrint(".\x02\n");
+
 
     while(1) {}
 }
