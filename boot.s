@@ -299,8 +299,6 @@ boot2:
 
     mov esp,0x4000
 
-    mov word [0xB8000], 0x0F41
-
     call 0x20000
 halt:
     cli
