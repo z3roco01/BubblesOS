@@ -4,10 +4,13 @@ AS=nasm
 ASFLAGS=-felf32
 QEMU=qemu-system-x86_64
 
+BOOT_DIR=bootloader
+KERN_DIR=kernel
+
 # kernel.c NEEDS to be at the start of the list
-CSRC=kernel.c idt.c kbd.c pic.c ports.c term.c vga.c
-ASSRC=isr.s
-COBJS=$(subst .c,.o,$(CSRC))
+CSRC=$(KERN_DIR)/kernel.c $(KERN_DIR)/idt.c $(KERN_DIR)/kbd.c $(KERN_DIR)/pic.c $(KERN_DIR)/ports.c $(KERN_DIR)/term.c $(KERN_DIR)/vga.c
+ASSRC=$(KERN_DIR)/isr.s
+COBJS=$(subst $(KERN_DIR)/, ,$(subst .c,.o,$(CSRC)))
 ASOBJS=$(subst .s,.o,$(ASSRC))
 
 KERN_TARG=kernel.bin
@@ -19,8 +22,8 @@ LINKSCRIPT=linker.ld
 all: $(TARGET)
 
 $(TARGET): linker.ld $(ASOBJS) $(COBJS)
-	$(CC) $(COBJS) isr.o -o $(KERN_TARG) $(CFLAGS) -T $(LINKSCRIPT)
-	nasm -fbin boot.s -o $(TARGET)
+	$(CC) $(COBJS) $(ASOBJS) -o $(KERN_TARG) $(CFLAGS) -T $(LINKSCRIPT)
+	nasm -fbin $(BOOT_DIR)/boot.s -o $(TARGET)
 	mcopy -i $(TARGET) $(KERN_TARG) "::kernel.bin"
 	#cat boot.o kernel.bin > $(TARGET)
 
