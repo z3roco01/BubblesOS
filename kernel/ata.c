@@ -1,7 +1,8 @@
 #include "ata.h"
+#include "term.h"
 
 // https://wiki.osdev.org/ATA_PIO_Mode#IDENTIFY_command
-uint8_t ataIdentify() {
+ataDrive_t* ataIdentify() {
     outb(ATA_PRIMARY_DRIVE_SEL, 0xA0);
 
     outb(ATA_PRIMARY_SECT_CNT, 0x00);
@@ -9,25 +10,65 @@ uint8_t ataIdentify() {
     outb(ATA_PRIMARY_LBA_M, 0x00);
     outb(ATA_PRIMARY_LBA_H, 0x00);
 
-    outb(ATA_PRIMARY_CMD, ATA_IDENT_CMD);
+    outb(ATA_PRIMARY_CMD, ATA_CMD_IDENT);
 
     uint8_t status = inb(ATA_PRIMARY_STATUS);
     if(status == 0)
-       return 0;
+       return NULL;
 
-    while(status & (1<<7)) {
+    while(status & ATA_STATUS_BSY_MASK) {
         status = inb(ATA_PRIMARY_STATUS);
     }
 
     uint8_t lbaM = inb(ATA_PRIMARY_LBA_M);
     uint8_t lbaH = inb(ATA_PRIMARY_LBA_H);
     if(lbaM || lbaH)
-        return 0;
+        return NULL;
 
     status = inb(ATA_PRIMARY_STATUS);
-    while(!(status & (1<<3)) || !(status & (1<<0))) {
+    while(!(status & ATA_STATUS_DRQ_MASK)) {
         status = inb(ATA_PRIMARY_STATUS);
     }
 
-    return 1;
+    if(status & ATA_STATUS_ERR_MASK)
+        return NULL;
+
+    static ataDrive_t drive;
+    static uint16_t data[256];
+    for(uint16_t i = 0; i < 256; ++i) {
+        drive.identData[i] = inw(ATA_PRIMARY_DATA);
+    }
+
+    return &drive;
+}
+
+void ataPioRead28(uint32_t lba, uint8_t sectCnt, uint8_t* target) {
+    outb(ATA_PRIMARY_DRIVE_SEL, 0xE0 | (lba >> 24) & 0x0F);
+    outb(ATA_PRIMARY_SECT_CNT, sectCnt);
+
+    outb(ATA_PRIMARY_LBA_L, (uint8_t)lba);
+    outb(ATA_PRIMARY_LBA_M, (uint8_t)(lba >> 8));
+    outb(ATA_PRIMARY_LBA_H, (uint8_t)(lba >> 16));
+
+    outb(ATA_PRIMARY_CMD, ATA_CMD_READ);
+
+    uint8_t status = inb(ATA_PRIMARY_STATUS);
+    while(!(status & ATA_STATUS_DRQ_MASK)) {
+        status = inb(ATA_PRIMARY_STATUS);
+    }
+
+    uint16_t curWord = 0;
+    for(uint32_t i = 0; i < sectCnt; ++i){
+        status = 0;
+        while(!(status & ATA_STATUS_DRQ_MASK)) {
+            status = inb(ATA_PRIMARY_STATUS);
+        }
+        for(uint16_t j = 0; j < 256; ++j) {
+            curWord = inw(ATA_PRIMARY_DATA);
+            target[(j*2+0)+(i*512)] = (uint8_t)(curWord & 0x00FF);
+            target[(j*2+1)+(i*512)] = (uint8_t)((curWord & 0xFF00) >> 8);
+        }
+    }
+
+//    return data;
 }

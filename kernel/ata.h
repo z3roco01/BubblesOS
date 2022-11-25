@@ -3,10 +3,12 @@
 
 #include "ports.h"
 #include "types.h"
+#include "term.h"
 
 // ATA primary ports
 #define ATA_PRIMARY_DATA        0x1F0
 #define ATA_PRIMARY_ERR         0x1F1
+#define ATA_PRIMARY_FEAT        0x1F1
 #define ATA_PRIMARY_SECT_CNT    0x1F2
 #define ATA_PRIMARY_LBA_L       0x1F3
 #define ATA_PRIMARY_LBA_M       0x1F4
@@ -18,6 +20,7 @@
 // ATA secondary ports
 #define ATA_SECONDARY_DATA      0x170
 #define ATA_SECONDARY_ERR       0x171
+#define ATA_SECONDARY_FEAT      0x171
 #define ATA_SECONDARY_SECT_CNT  0x172
 #define ATA_SECONDARY_LBA_L     0x173
 #define ATA_SECONDARY_LBA_M     0x174
@@ -27,8 +30,24 @@
 #define ATA_SECONDARY_STATUS    0x177
 
 // ATA commands
-#define ATA_IDENT_CMD           0xEC
+#define ATA_CMD_IDENT           0xEC
+#define ATA_CMD_READ            0x20
 
-uint8_t ataIdentify();
+// status bit masks
+#define ATA_STATUS_ERR_MASK     (1<<0)
+#define ATA_STATUS_IDX_MASK     (1<<1)
+#define ATA_STATUS_CORR_MASK    (1<<2)
+#define ATA_STATUS_DRQ_MASK     (1<<3)
+#define ATA_STATUS_SRV_MASK     (1<<4)
+#define ATA_STATUS_DF_MASK      (1<<5)
+#define ATA_STATUS_RDY_MASK     (1<<6)
+#define ATA_STATUS_BSY_MASK     (1<<7)
+
+typedef struct ataDrive {
+    uint16_t identData[256];
+} ataDrive_t;
+
+ataDrive_t* ataIdentify();
+void ataPioRead28(uint32_t lba, uint8_t sectCnt, uint8_t* target);
 
 #endif
