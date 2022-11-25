@@ -49,7 +49,7 @@ typedef struct ataDrive {
 } ataDrive_t;
 
 ataDrive_t* ataIdentify();
-void ataPioRead28(uint32_t lba, uint8_t sectCnt, uint8_t* target);
-void ataPioWrite28(uint32_t lba, uint8_t sectCnt, uint8_t* data);
+void ataPioRead28(uint32_t lba, uint8_t sectCnt, void* target);
+void ataPioWrite28(uint32_t lba, uint8_t sectCnt, void* data);
 
 #endif

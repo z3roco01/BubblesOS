@@ -35,7 +35,6 @@ ataDrive_t* ataIdentify() {
         return NULL;
 
     static ataDrive_t drive;
-    static uint16_t data[256];
     for(uint16_t i = 0; i < 256; ++i) {
         drive.identData[i] = inw(ATA_PRIMARY_DATA);
     }
@@ -43,8 +42,8 @@ ataDrive_t* ataIdentify() {
     return &drive;
 }
 
-void ataPioRead28(uint32_t lba, uint8_t sectCnt, uint8_t* data) {
-    outb(ATA_PRIMARY_DRIVE_SEL, 0xE0 | (lba >> 24) & 0x0F);
+void ataPioRead28(uint32_t lba, uint8_t sectCnt, void* data) {
+    outb(ATA_PRIMARY_DRIVE_SEL, 0xE0 | ((lba >> 24) & 0x0F));
     outb(ATA_PRIMARY_SECT_CNT, sectCnt);
 
     outb(ATA_PRIMARY_LBA_L, (uint8_t)lba);
@@ -65,15 +64,16 @@ void ataPioRead28(uint32_t lba, uint8_t sectCnt, uint8_t* data) {
             status = inb(ATA_PRIMARY_STATUS);
         }
         for(uint16_t j = 0; j < 256; ++j) {
-            curWord = inw(ATA_PRIMARY_DATA);
-            data[(j*2+0)+(i*512)] = (uint8_t)(curWord & 0x00FF);
-            data[(j*2+1)+(i*512)] = (uint8_t)((curWord & 0xFF00) >> 8);
+            ((uint16_t*)data)[j+(i*256)] = inw(ATA_PRIMARY_DATA);
+            /*curWord = inw(ATA_PRIMARY_DATA);
+            ((uint8_t*)data)[(j*2+0)+(i*512)] = (uint8_t)(curWord & 0x00FF);
+            ((uint8_t*)data)[(j*2+1)+(i*512)] = (uint8_t)((curWord & 0xFF00) >> 8);*/
         }
     }
 }
 
-void ataPioWrite28(uint32_t lba, uint8_t sectCnt, uint8_t* data) {
-    outb(ATA_PRIMARY_DRIVE_SEL, 0xE0 | (lba >> 24) & 0x0F);
+void ataPioWrite28(uint32_t lba, uint8_t sectCnt, void* data) {
+    outb(ATA_PRIMARY_DRIVE_SEL, 0xE0 | ((lba >> 24) & 0x0F));
     outb(ATA_PRIMARY_SECT_CNT, sectCnt);
 
     outb(ATA_PRIMARY_LBA_L, (uint8_t)lba);
@@ -94,10 +94,11 @@ void ataPioWrite28(uint32_t lba, uint8_t sectCnt, uint8_t* data) {
             status = inb(ATA_PRIMARY_STATUS);
         }
         for(uint16_t j = 0; j < 256; ++j) {
-            curWord = (uint16_t)data[(j*2+1)+(i*512)];
+            /*curWord = (uint16_t)((uint8_t*)data)[(j*2+1)+(i*512)];
             curWord <<= 8;
-            curWord |= (uint16_t)(data[(j*2+0)+(i*512)]);
-            outw(ATA_PRIMARY_DATA, curWord);
+            curWord |= (uint16_t)(((uint8_t*)data)[(j*2+0)+(i*512)]);
+            outw(ATA_PRIMARY_DATA, curWord);*/
+            outw(ATA_PRIMARY_DATA, ((uint16_t*)data)[j+(i*256)]);
         }
     }
 
