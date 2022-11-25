@@ -66,7 +66,7 @@ void kbdIsr(void) {
             msg[0] = keysBuf[bufPos].chr;
         }
 
-        termPrint(msg);
+//        termPrint(msg);
     }
 
     picSendEoi(1);
