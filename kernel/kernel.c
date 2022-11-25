@@ -25,15 +25,5 @@ void kmain() {
     ataDrive_t* drive = ataIdentify();
     termPrint(".\x02\n");
 
-
-    uint8_t* data;
-    ataPioRead28(0, 1, data);
-    termPrintHex(data[0]);
-    termPrint("\n");
-    termPrintHex(data[1]);
-    termPrint("\n");
-    termPrintHex(data[2]);
-    termPrint("\n");
-
     while(1) {}
 }

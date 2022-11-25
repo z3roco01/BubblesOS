@@ -1,4 +1,5 @@
 #include "ata.h"
+#include "ports.h"
 #include "term.h"
 
 // https://wiki.osdev.org/ATA_PIO_Mode#IDENTIFY_command
@@ -42,7 +43,7 @@ ataDrive_t* ataIdentify() {
     return &drive;
 }
 
-void ataPioRead28(uint32_t lba, uint8_t sectCnt, uint8_t* target) {
+void ataPioRead28(uint32_t lba, uint8_t sectCnt, uint8_t* data) {
     outb(ATA_PRIMARY_DRIVE_SEL, 0xE0 | (lba >> 24) & 0x0F);
     outb(ATA_PRIMARY_SECT_CNT, sectCnt);
 
@@ -59,16 +60,47 @@ void ataPioRead28(uint32_t lba, uint8_t sectCnt, uint8_t* target) {
 
     uint16_t curWord = 0;
     for(uint32_t i = 0; i < sectCnt; ++i){
-        status = 0;
+        status = inb(ATA_PRIMARY_STATUS);
         while(!(status & ATA_STATUS_DRQ_MASK)) {
             status = inb(ATA_PRIMARY_STATUS);
         }
         for(uint16_t j = 0; j < 256; ++j) {
             curWord = inw(ATA_PRIMARY_DATA);
-            target[(j*2+0)+(i*512)] = (uint8_t)(curWord & 0x00FF);
-            target[(j*2+1)+(i*512)] = (uint8_t)((curWord & 0xFF00) >> 8);
+            data[(j*2+0)+(i*512)] = (uint8_t)(curWord & 0x00FF);
+            data[(j*2+1)+(i*512)] = (uint8_t)((curWord & 0xFF00) >> 8);
+        }
+    }
+}
+
+void ataPioWrite28(uint32_t lba, uint8_t sectCnt, uint8_t* data) {
+    outb(ATA_PRIMARY_DRIVE_SEL, 0xE0 | (lba >> 24) & 0x0F);
+    outb(ATA_PRIMARY_SECT_CNT, sectCnt);
+
+    outb(ATA_PRIMARY_LBA_L, (uint8_t)lba);
+    outb(ATA_PRIMARY_LBA_M, (uint8_t)(lba >> 8));
+    outb(ATA_PRIMARY_LBA_H, (uint8_t)(lba >> 16));
+
+    outb(ATA_PRIMARY_CMD, ATA_CMD_WRITE);
+
+    uint8_t status = inb(ATA_PRIMARY_STATUS);
+    while(!(status & ATA_STATUS_DRQ_MASK)) {
+        status = inb(ATA_PRIMARY_STATUS);
+    }
+
+    uint16_t curWord = 0;
+    for(uint32_t i = 0; i < sectCnt; ++i){
+        status = inb(ATA_PRIMARY_STATUS);
+        while((status & ATA_STATUS_BSY_MASK) && !(status & ATA_STATUS_DRQ_MASK)) {
+            status = inb(ATA_PRIMARY_STATUS);
+        }
+        for(uint16_t j = 0; j < 256; ++j) {
+            curWord = (uint16_t)data[(j*2+1)+(i*512)];
+            curWord <<= 8;
+            curWord |= (uint16_t)(data[(j*2+0)+(i*512)]);
+            outw(ATA_PRIMARY_DATA, curWord);
         }
     }
 
-//    return data;
+    outb(ATA_PRIMARY_CMD, 0xE7);
+    while(inb(ATA_PRIMARY_STATUS) & ATA_STATUS_BSY_MASK) { }
 }

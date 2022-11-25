@@ -32,6 +32,7 @@
 // ATA commands
 #define ATA_CMD_IDENT           0xEC
 #define ATA_CMD_READ            0x20
+#define ATA_CMD_WRITE           0x30
 
 // status bit masks
 #define ATA_STATUS_ERR_MASK     (1<<0)
@@ -49,5 +50,6 @@ typedef struct ataDrive {
 
 ataDrive_t* ataIdentify();
 void ataPioRead28(uint32_t lba, uint8_t sectCnt, uint8_t* target);
+void ataPioWrite28(uint32_t lba, uint8_t sectCnt, uint8_t* data);
 
 #endif
