@@ -17,5 +17,8 @@ memBlk_t* mballoc(uint32_t size);
 void memcpy(void* s1, void* s2, uint32_t n);
 void mbfree(memBlk_t* memBlk);
 void mbrealloc(memBlk_t* memBlk, uint32_t size);
+void* malloc(uint32_t size);
+void free(void* ptr);
+void* realloc(void* ptr, uint32_t size);
 
 #endif

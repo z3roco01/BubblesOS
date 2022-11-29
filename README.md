@@ -11,8 +11,8 @@ qemu-system-x86_64 </br>
 ## Features (implemented and planned)
 - [X] FAT12
 - [X] ATA driver
+- [X] Memory allocater(only basic allocator)
 - [ ] VFS
 - [ ] Proper keyboard driver
 - [ ] ELF executer
-- [ ] Memory allocater
 - [ ] Real graphics(not VGA text mode)

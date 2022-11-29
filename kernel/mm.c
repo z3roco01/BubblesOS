@@ -1,5 +1,6 @@
 #include "mm.h"
 #include "term.h"
+#include "types.h"
 
 memBlk_t* memHead = NULL;
 uint32_t curAddr = 0x10000;
@@ -66,4 +67,52 @@ void mbrealloc(memBlk_t* memBlk, uint32_t size) {
     memcpy(memBlk->memAddr, memAddr, size);
     memBlk->memAddr = memAddr;
     memBlk->size = size;
+}
+
+memBlk_t* _findPtr(void* ptr) {
+    if(ptr == NULL)
+        return NULL;
+    memBlk_t* curBlk = memHead;
+    while(1) {
+        if(curBlk->memAddr == ptr)
+            return curBlk;
+
+        if(curBlk->flags & MEM_BLK_FLAGS_IS_END)
+            return NULL;
+
+        curBlk = curBlk->nextBlk;
+    }
+}
+
+void* malloc(uint32_t size) {
+    memBlk_t* memBlk = mballoc(size);
+    return memBlk->memAddr;
+}
+
+void free(void* ptr) {
+    if(ptr == NULL)
+        return;
+
+    memBlk_t* memBlk = _findPtr(ptr);
+    if(memBlk != NULL)
+        memBlk->flags |= MEM_BLK_FLAGS_IS_FREE;
+}
+
+void* realloc(void* ptr, uint32_t size) {
+    if(ptr == NULL)
+        return malloc(size);
+    if(size == 0) {
+        free(ptr);
+        return NULL;
+    }
+
+    memBlk_t* memBlk = _findPtr(ptr);
+    if(memBlk == NULL)
+        return NULL;
+
+    memBlk_t* newBlk = mballoc(size);
+    memcpy(memBlk->memAddr, newBlk->memAddr, size);
+
+    mbfree(memBlk);
+    return memBlk->memAddr;
 }
