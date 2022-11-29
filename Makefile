@@ -25,7 +25,7 @@ $(TARGET): linker.ld $(ASOBJS) $(COBJS)
 	$(CC) $(COBJS) $(ASOBJS) -o $(KERN_TARG) $(CFLAGS) -T $(LINKSCRIPT)
 	nasm -fbin $(BOOT_DIR)/boot.s -o $(TARGET)
 	mcopy -i $(TARGET) $(KERN_TARG) "::kernel.bin"
-	#cat boot.o kernel.bin > $(TARGET)
+	mcopy -i $(TARGET) test "::test"
 
 $(COBJS): $(CSRC)
 	$(CC) $(CFLAGS) -c $(CSRC)
@@ -37,4 +37,4 @@ clean:
 	rm -f boot.o $(COBJS) $(ASOBJS) $(TARGET) $(KERN_TARG)
 
 run: $(TARGET)
-	$(QEMU) -hda $(TARGET)
+	$(QEMU) -drive file=$(TARGET),format=raw,index=0,media=disk
