@@ -1,9 +1,11 @@
 #include "ata.h"
+#include "mm.h"
 #include "ports.h"
 #include "term.h"
 #include "pic.h"
 #include "idt.h"
 #include "kbd.h"
+#include "mm.h"
 
 typedef struct fatBs {
     uint8_t  jmpBootcode[3];
@@ -70,7 +72,6 @@ void kmain() {
     uint8_t data[512];
     ataDrive_t* drive = ataIdentify();
     termPrint(".\x02\n");
-
 
     // Read the boot sector
     ataPioRead28(0, 1, &bs);
