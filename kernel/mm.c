@@ -5,8 +5,6 @@ memBlk_t* memHead = NULL;
 uint32_t curAddr = 0x10000;
 
 memBlk_t* newMbAlloc(uint32_t size, memBlk_t* oldTail) {
-    termPrintHex(curAddr);
-    termPrint("\n\n");
     memBlk_t* memBlk = (memBlk_t*)curAddr;
     void* memAddr = (void*)curAddr;
     curAddr += sizeof(memBlk_t) + size;
@@ -18,8 +16,7 @@ memBlk_t* newMbAlloc(uint32_t size, memBlk_t* oldTail) {
     memBlk->nextBlk = NULL;
     if(oldTail != NULL)
         oldTail->nextBlk = memBlk;
-    termPrintHex(curAddr);
-    termPrint("\n\n");
+
     return memBlk;
 }
 
