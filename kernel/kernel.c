@@ -77,7 +77,7 @@ void kmain() {
     ataPioRead28(0, 1, &bs);
 
     // read the fat
-    uint8_t   fat[bs.spf * bs.bps];
+    uint8_t* fat = malloc(bs.spf * bs.bps);
     ataPioRead28(bs.reservedSects, bs.spf, fat);
 
     // Read the root dir
@@ -111,7 +111,7 @@ void kmain() {
     if(found) {
         uint32_t bpc = bs.spc * bs.bps;
         uint32_t bufSize = (foundFile.size % bpc == 0) ? foundFile.size : foundFile.size + (bpc - (foundFile.size % bpc));
-        uint8_t buf[bufSize];
+        uint8_t* buf = malloc(bufSize);
         uint32_t off = 0;
         // Read the file
         uint16_t curClust = foundFile.lowClustNum;
