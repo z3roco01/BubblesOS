@@ -53,6 +53,20 @@ void memcpy(void* s1, void* s2, uint32_t n) {
     }
 }
 
+void memset(void * s, uint8_t c, uint32_t n) {
+    for(uint32_t i = 0; i < n; ++i) {
+        ((uint8_t*)s)[i] = c;
+    }
+}
+
+uint32_t strlen(const char* s) {
+    uint32_t i = 0;
+    while(s[i] != '\0') {
+        ++i;
+    }
+    return i;
+}
+
 // Sets the struct in memory to be free and sets the variable to NULL
 void mbfree(memBlk_t* memBlk) {
     if(memBlk == NULL)
@@ -87,6 +101,14 @@ memBlk_t* _findPtr(void* ptr) {
 void* malloc(uint32_t size) {
     memBlk_t* memBlk = mballoc(size);
     return memBlk->memAddr;
+}
+
+void* calloc(uint32_t size) {
+    void* mem = malloc(size);
+    for(uint32_t i = 0; i < size; ++i) {
+        ((uint8_t*)mem)[i] = 0;
+    }
+    return mem;
 }
 
 void free(void* ptr) {

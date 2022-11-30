@@ -69,10 +69,14 @@ void kmain() {
 
     termPrint(".");
 
-    uint8_t data[512];
-    ataDrive_t* drive = ataIdentify();
+    ataDev_t* ataDev = ataIdentify();
     termPrint(".\x02\n");
 
+    vfsNode_t* ataNode = createAtaNode(ataDev);
+
+
+
+    while(1) {}
     // Read the boot sector
     ataPioRead28(0, 1, &bs);
 

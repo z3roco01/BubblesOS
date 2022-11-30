@@ -15,9 +15,12 @@ typedef struct memBlk {
 
 memBlk_t* mballoc(uint32_t size);
 void memcpy(void* s1, void* s2, uint32_t n);
+void memset(void * s, uint8_t c, uint32_t n);
+uint32_t strlen(const char* s);
 void mbfree(memBlk_t* memBlk);
 void mbrealloc(memBlk_t* memBlk, uint32_t size);
 void* malloc(uint32_t size);
+void* calloc(uint32_t size);
 void free(void* ptr);
 void* realloc(void* ptr, uint32_t size);
 

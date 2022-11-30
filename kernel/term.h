@@ -4,6 +4,7 @@
 #include "types.h"
 #include "vga.h"
 #include "ports.h"
+#include "mm.h"
 
 void clearScreen(void);
 void enableCursor(uint8_t cursorStart, uint8_t cursorEnd);

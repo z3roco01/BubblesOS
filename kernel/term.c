@@ -83,13 +83,6 @@ void termPutChar(char c) {
     }
 }
 
-uint32_t strlen(const char* str) {
-    uint32_t len = 0;
-    while (str[len])
-        len++;
-    return len;
-}
-
 void termPrint(const char* str) {
     for(uint32_t i = 0; i < strlen(str); ++i)
         termPutChar(str[i]);

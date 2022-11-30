@@ -4,6 +4,8 @@
 #include "ports.h"
 #include "types.h"
 #include "term.h"
+#include "mm.h"
+#include "vfs.h"
 
 // ATA primary ports
 #define ATA_PRIMARY_DATA        0x1F0
@@ -34,6 +36,9 @@
 #define ATA_CMD_READ            0x20
 #define ATA_CMD_WRITE           0x30
 
+#define ATA_MASTER_VAL          0xA0
+#define ATA_SLAVE_VAL           0xB0
+
 // status bit masks
 #define ATA_STATUS_ERR_MASK     (1<<0)
 #define ATA_STATUS_IDX_MASK     (1<<1)
@@ -44,12 +49,40 @@
 #define ATA_STATUS_RDY_MASK     (1<<6)
 #define ATA_STATUS_BSY_MASK     (1<<7)
 
-typedef struct ataDrive {
-    uint16_t identData[256];
-} ataDrive_t;
+#define ATA_LBA48_SUPPORT_MASK  (1<<10)
+#define ATA_80_CONDUCTOR_MASK   (1<<11)
 
-ataDrive_t* ataIdentify();
+typedef enum ataBus {
+    ATA_PRIMARY_BUS,
+    ATA_SECONDARY_BUS
+} ataBus_t;
+
+typedef enum ataDType {
+    ATA_MASTER,
+    ATA_SLAVE
+} ataDType_t;
+
+typedef struct ataDev {
+    uint8_t lba48Support;
+
+    uint8_t udmaActive;
+    uint8_t udmaSupport;
+
+    uint8_t eightyConductor;
+
+    uint32_t lba28Sects;
+    uint32_t lba48Sects[2];
+
+    ataBus_t bus;
+    ataDType_t type;
+
+    char mountPoint[32];
+    //uint16_t identData[256];
+} ataDev_t;
+
+ataDev_t* ataIdentify();
 void ataPioRead28(uint32_t lba, uint8_t sectCnt, void* target);
 void ataPioWrite28(uint32_t lba, uint8_t sectCnt, void* data);
+vfsNode_t* createAtaNode(ataDev_t* ataDev);
 
 #endif
