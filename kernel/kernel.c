@@ -37,9 +37,8 @@ void kmain() {
     vfsNode_t* ataNode = createAtaNode(ataDev);
 
     fat12Fs_t* fat12Fs = fat12Init(ataNode);
-    termPrint(fat12Fs->rootNode->name);
-    vfsNode_t* test = vfsFindFile(fat12Fs->rootNode, "TEST       ");
 
+    vfsNode_t* test = vfsFindFile(fat12Fs->rootNode, "TEST       ");
 
     if(test != NULL)
         termPrint(test->name);

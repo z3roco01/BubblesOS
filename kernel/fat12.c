@@ -25,16 +25,16 @@ fat12Fs_t* fat12Init(vfsNode_t* dev) {
     fs->rootDir = malloc(sizeof(fatDir_t)*fs->bs->rootDirEnts);
     vfsRead(fs->dev, fs->rootDirStart, sects * fs->bs->bps, fs->rootDir);
 
-    vfsNode_t* rootNode = calloc(sizeof(vfsNode_t));
+    fs->rootNode = calloc(sizeof(vfsNode_t));
 
-    rootNode->name[0] = '/';
+    fs->rootNode->name[0] = '/';
 
-    rootNode->dev = fs;
-    rootNode->read     = fat12Read;
-    rootNode->write    = fat12Write;
-    rootNode->open     = fat12Open;
-    rootNode->findFile = fat12FindFile;
-    rootNode->size     = fs->bs->rootDirEnts * sizeof(fatDir_t);
+    fs->rootNode->dev = fs;
+    fs->rootNode->read     = fat12Read;
+    fs->rootNode->write    = fat12Write;
+    fs->rootNode->open     = fat12Open;
+    fs->rootNode->findFile = fat12FindFile;
+    fs->rootNode->size     = fs->bs->rootDirEnts * sizeof(fatDir_t);
 
     return fs;
 }
@@ -60,7 +60,6 @@ vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name) {
     fatDir_t* foundFile;
     // Name is now valid
     if(parent->name[0] == '/' && parent->name[1] == '\0') {
-        termPrint("x\n");
         // Finding file in the root directory
         uint8_t found = 0;
         uint8_t maches;
