@@ -1,6 +1,5 @@
 #include "mm.h"
 #include "term.h"
-#include "types.h"
 
 memBlk_t* memHead = NULL;
 uint32_t curAddr = 0x10000;
@@ -34,7 +33,7 @@ memBlk_t* mballoc(uint32_t size) {
             curBlk->flags &= ~MEM_BLK_FLAGS_IS_FREE;
             return curBlk;
         }
-        if(curBlk->flags & MEM_BLK_FLAGS_IS_END) {
+        if((curBlk->flags & MEM_BLK_FLAGS_IS_END) || curBlk->nextBlk == NULL) {
             // curBlk is the end and we need to alloc a new block
             memBlk_t* ret = newMbAlloc(size, curBlk);
             curBlk->flags &= ~MEM_BLK_FLAGS_IS_END;
@@ -118,7 +117,6 @@ void* malloc(uint32_t size) {
 void* calloc(uint32_t size) {
     void* mem = malloc(size);
     for(uint32_t i = 0; i < size; ++i) {
-        termPrintHex(i);
         ((uint8_t*)mem)[i] = 0;
     }
     return mem;

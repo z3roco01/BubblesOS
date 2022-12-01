@@ -1,5 +1,4 @@
 #include "term.h"
-#include "vga.h"
 
 const char* HEX_MAP = "0123456789ABCDEF";
 vgaColour_t termColour;

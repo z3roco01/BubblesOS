@@ -8,6 +8,7 @@
 #include "kbd.h"
 #include "mm.h"
 #include "fat12.h"
+#include "vfs.h"
 
 void kmain() {
     termInit();
@@ -35,9 +36,15 @@ void kmain() {
 
     vfsNode_t* ataNode = createAtaNode(ataDev);
 
-    termPrint(ataDev->mountPoint);
-
     fat12Fs_t* fat12Fs = fat12Init(ataNode);
+    termPrint(fat12Fs->rootNode->name);
+    vfsNode_t* test = vfsFindFile(fat12Fs->rootNode, "TEST       ");
+
+
+    if(test != NULL)
+        termPrint(test->name);
+    else
+        termPrint("NOT FOUND");
 
     while(1) {}
 /*

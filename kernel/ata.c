@@ -181,14 +181,12 @@ void ataPioWrite28(uint32_t lba, uint8_t sectCnt, void* data) {
 }
 
 vfsNode_t* createAtaNode(ataDev_t* ataDev) {
-    termPrintHex(sizeof(vfsNode_t));
     vfsNode_t* node = calloc(sizeof(vfsNode_t));
-    termPrint("a\n");
     char* name = "hda\0";
     memcpy(name, node->name, 4);
 
     node->flags  = VFS_FLAGS_BLOCK_DEV;
-    node->device = ataDev;
+    node->dev = ataDev;
     node->read   = ataVfsRead;
     node->write  = ataVfsWrite;
     node->open   = NULL;

@@ -25,7 +25,7 @@ typedef struct dirent*  (*readDirCallbck)  (struct vfsNode*, uint32_t);
 
 typedef struct vfsNode {
     char    name[255];
-    void*   device;
+    void*   dev;
 
     uint8_t flags;       // flags about the node
     uint8_t openFlags;   // flags used with open()

@@ -47,7 +47,7 @@ dirent_t* vfsReadDir(vfsNode_t* node, uint32_t index) {
     return NULL;
 }
 
-uint32_t vfsMountRecur(vfsNode_t* curNode, char* path, genTreeNode_t* curTree) {
+void vfsMountRecur(vfsNode_t* curNode, char* path, genTreeNode_t* curTree) {
     // grab the directory name
     char* dir;
     uint32_t i = 0;

@@ -53,11 +53,14 @@ typedef struct fatDir {
 typedef struct fat12Fs {
     vfsNode_t* dev;
 
-    fatBs_t* bs;
-    uint8_t* fat;
+    fatBs_t*   bs;
+    uint8_t*   fat;
 
-    uint32_t rootDirStart;
-    uint32_t rootDirEnd;
+    uint32_t   rootDirStart;
+    uint32_t   rootDirEnd;
+
+    fatDir_t*  rootDir;
+    vfsNode_t* rootNode;
 } fat12Fs_t;
 
 fat12Fs_t* fat12Init(vfsNode_t* dev);
