@@ -8,7 +8,7 @@ BOOT_DIR=bootloader
 KERN_DIR=kernel
 
 # kernel.c NEEDS to be at the start of the list
-CSRC=$(KERN_DIR)/kernel.c $(KERN_DIR)/idt.c $(KERN_DIR)/kbd.c $(KERN_DIR)/pic.c $(KERN_DIR)/ports.c $(KERN_DIR)/term.c $(KERN_DIR)/vga.c $(KERN_DIR)/ata.c $(KERN_DIR)/mm.c $(KERN_DIR)/vfs.c
+CSRC=$(KERN_DIR)/kernel.c $(KERN_DIR)/idt.c $(KERN_DIR)/kbd.c $(KERN_DIR)/pic.c $(KERN_DIR)/ports.c $(KERN_DIR)/term.c $(KERN_DIR)/vga.c $(KERN_DIR)/ata.c $(KERN_DIR)/mm.c $(KERN_DIR)/vfs.c $(KERN_DIR)/fat12.c $(KERN_DIR)/dll.c
 ASSRC=$(KERN_DIR)/isr.s
 COBJS=$(subst $(KERN_DIR)/, ,$(subst .c,.o,$(CSRC)))
 ASOBJS=$(subst .s,.o,$(ASSRC))

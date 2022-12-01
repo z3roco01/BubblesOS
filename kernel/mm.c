@@ -67,6 +67,18 @@ uint32_t strlen(const char* s) {
     return i;
 }
 
+uint32_t strcmp(const char* s1, const char* s2) {
+    uint32_t i = 0;
+    while(s1[i] && s2[i]) {
+        if(s1[i] == s2[i])
+            return 1;
+
+        ++i;
+    }
+
+    return 0;
+}
+
 // Sets the struct in memory to be free and sets the variable to NULL
 void mbfree(memBlk_t* memBlk) {
     if(memBlk == NULL)
@@ -106,6 +118,7 @@ void* malloc(uint32_t size) {
 void* calloc(uint32_t size) {
     void* mem = malloc(size);
     for(uint32_t i = 0; i < size; ++i) {
+        termPrintHex(i);
         ((uint8_t*)mem)[i] = 0;
     }
     return mem;

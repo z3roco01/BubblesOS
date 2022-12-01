@@ -1,5 +1,4 @@
 #include "ata.h"
-#include "vfs.h"
 
 // https://wiki.osdev.org/ATA_PIO_Mode#IDENTIFY_command
 ataDev_t* ataIdentify() {
@@ -182,7 +181,9 @@ void ataPioWrite28(uint32_t lba, uint8_t sectCnt, void* data) {
 }
 
 vfsNode_t* createAtaNode(ataDev_t* ataDev) {
+    termPrintHex(sizeof(vfsNode_t));
     vfsNode_t* node = calloc(sizeof(vfsNode_t));
+    termPrint("a\n");
     char* name = "hda\0";
     memcpy(name, node->name, 4);
 

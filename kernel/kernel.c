@@ -1,3 +1,4 @@
+#include "types.h"
 #include "ata.h"
 #include "mm.h"
 #include "ports.h"
@@ -6,51 +7,7 @@
 #include "idt.h"
 #include "kbd.h"
 #include "mm.h"
-
-typedef struct fatBs {
-    uint8_t  jmpBootcode[3];
-    uint8_t  oemIdent[8];
-    uint16_t bps;
-    uint8_t  spc;
-    uint16_t reservedSects;
-    uint8_t  numFats;
-    uint16_t rootDirEnts;
-    uint16_t sectCnt;
-    uint8_t  mediaDesc;
-    uint16_t spf;
-    uint16_t spt;
-    uint16_t heads;
-    uint32_t hiddenSects;
-    uint32_t largeSectCnt;
-
-    // FAT12/16 only
-    uint8_t  driveNum;
-    uint8_t  reserved;
-    uint8_t  sig;
-    uint32_t volId;
-    uint8_t  volLbl[11];
-    uint8_t  sysIdent[8];
-    uint8_t  bootCode[448];
-    uint16_t bootSig;
-}__attribute__((packed)) fatBs_t;
-
-typedef struct fatDir {
-    uint8_t  name[11];
-    uint8_t  attrs;
-    uint8_t  reserved;
-    uint8_t  cTimeTens;
-    uint16_t cTime;
-    uint16_t cDate;
-    uint16_t aDate;
-    uint16_t highClustNum;
-    uint16_t mTime;
-    uint16_t mDate;
-    uint16_t lowClustNum;
-    uint32_t size;
-}__attribute__((packed)) fatDir_t;
-
-fatBs_t   bs = {0};
-fatDir_t* rootDir = NULL;
+#include "fat12.h"
 
 void kmain() {
     termInit();
@@ -69,30 +26,22 @@ void kmain() {
 
     termPrint(".");
 
+    vfsInit();
+
+    termPrint(".");
+
     ataDev_t* ataDev = ataIdentify();
     termPrint(".\x02\n");
 
     vfsNode_t* ataNode = createAtaNode(ataDev);
 
+    termPrint(ataDev->mountPoint);
 
+    fat12Fs_t* fat12Fs = fat12Init(ataNode);
 
     while(1) {}
-    // Read the boot sector
-    ataPioRead28(0, 1, &bs);
-
-    // read the fat
-    uint8_t* fat = malloc(bs.spf * bs.bps);
-    ataPioRead28(bs.reservedSects, bs.spf, fat);
-
+/*
     // Read the root dir
-    uint32_t lba = bs.reservedSects + bs.spf * bs.numFats;
-    uint32_t sects = (sizeof(fatDir_t) * bs.rootDirEnts) / bs.bps;
-    if((sizeof(fatDir_t) * bs.rootDirEnts) % bs.bps > 0)
-        sects++;
-
-    uint32_t rootDirEnd = lba + sects;
-
-    ataPioRead28(lba, sects, rootDir);
 
 
     // find file in the root dir with the same name as compName
@@ -133,7 +82,7 @@ void kmain() {
         termPrint((char*)foundFile.name);
         termPrint(":\n");
         termPrint((char*)buf);
-    }
+    }*/
 
     while(1) {}
 }
