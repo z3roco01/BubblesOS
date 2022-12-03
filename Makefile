@@ -15,17 +15,20 @@ ASOBJS=$(subst .s,.o,$(ASSRC))
 
 KERN_TARG=kernel.bin
 
-TARGET=BubblesOS.img
+IMAGE=BubblesOS.img
 
 LINKSCRIPT=linker.ld
 
-all: $(TARGET)
+all: boot kern
 
-$(TARGET): linker.ld $(ASOBJS) $(COBJS)
+boot: $(BOOT_DIR)/boot.s
+	nasm -fbin $(BOOT_DIR)/boot.s -o $(IMAGE)
+
+kern: linker.ld $(ASOBJS) $(COBJS)
 	$(CC) $(COBJS) $(ASOBJS) -o $(KERN_TARG) $(CFLAGS) -T $(LINKSCRIPT)
-	nasm -fbin $(BOOT_DIR)/boot.s -o $(TARGET)
-	mcopy -i $(TARGET) $(KERN_TARG) "::kernel.bin"
-	mcopy -i $(TARGET) test "::test"
+	mcopy -i $(IMAGE) $(KERN_TARG) "::kernel.bin" -o
+	mcopy -i $(IMAGE) test "::test" -o
+
 
 $(COBJS): $(CSRC)
 	$(CC) $(CFLAGS) -c $(CSRC)
@@ -34,7 +37,7 @@ $(ASOBJS): $(ASSRC)
 	$(foreach asFile,$(ASSRC),$(AS) $(ASFLAGS) $(asFile) -o $(subst .s,.o,$(asFile));)
 
 clean:
-	rm -f boot.o $(COBJS) $(ASOBJS) $(TARGET) $(KERN_TARG)
+	rm -f boot.o $(COBJS) $(ASOBJS) $(IMAGE) $(KERN_TARG)
 
-run: $(TARGET)
-	$(QEMU) -drive file=$(TARGET),format=raw,index=0,media=disk
+run: boot kern
+	$(QEMU) -drive file=$(IMAGE),format=raw,index=0,media=disk
