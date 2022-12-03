@@ -8,6 +8,18 @@ make </br>
 nasm </br>
 qemu-system-x86_64 </br>
 
+## Compiling
+To compile run
+`
+make all
+`
+
+to test the os in qemu-system-x86_64 run
+`
+make run
+`
+after compiling.
+
 ## Features (implemented and planned)
 - [X] FAT12
 - [X] ATA driver
