@@ -1,4 +1,5 @@
 #include "ata.h"
+#include "term.h"
 
 // https://wiki.osdev.org/ATA_PIO_Mode#IDENTIFY_command
 ataDev_t* ataIdentify() {
@@ -190,6 +191,7 @@ vfsNode_t* createAtaNode(ataDev_t* ataDev) {
     node->read   = ataVfsRead;
     node->write  = ataVfsWrite;
     node->open   = NULL;
+    node->findFile = NULL;
 
     return node;
 }

@@ -40,10 +40,15 @@ void kmain() {
 
     vfsNode_t* test = vfsFindFile(fat12Fs->rootNode, "TEST       ");
 
-    if(test != NULL)
+    if(test != NULL) {
+        char* buf = malloc(512);
         termPrint(test->name);
-    else
+        termPrint("\n");
+        vfsRead(test, 0, 512, buf);
+        termPrint(buf);
+    }else {
         termPrint("NOT FOUND");
+    }
 
     while(1) {}
 /*
