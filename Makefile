@@ -29,7 +29,6 @@ kern: linker.ld $(ASOBJS) $(COBJS)
 	mcopy -i $(IMAGE) $(KERN_TARG) "::kernel.bin" -o
 	mcopy -i $(IMAGE) test "::test" -o
 
-
 $(COBJS): $(CSRC)
 	$(CC) $(CFLAGS) -c $(CSRC)
 
@@ -39,5 +38,5 @@ $(ASOBJS): $(ASSRC)
 clean:
 	rm -f boot.o $(COBJS) $(ASOBJS) $(IMAGE) $(KERN_TARG)
 
-run: boot kern
+run:
 	$(QEMU) -drive file=$(IMAGE),format=raw,index=0,media=disk
