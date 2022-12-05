@@ -1,5 +1,6 @@
 #include "fat12.h"
 #include "term.h"
+#include "vfs.h"
 
 fat12Fs_t* fat12Init(vfsNode_t* dev) {
     fat12Fs_t* fs = malloc(sizeof(fat12Fs_t));
@@ -28,6 +29,8 @@ fat12Fs_t* fat12Init(vfsNode_t* dev) {
     fs->rootNode = calloc(sizeof(vfsNode_t));
 
     fs->rootNode->name[0] = '/';
+
+    fs->rootNode->flags = VFS_FLAGS_DIR;
 
     fs->rootNode->dev = fs;
     fs->rootNode->read     = fat12Read;
@@ -72,24 +75,31 @@ vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name) {
     fatDir_t* foundFile;
     // Name is now valid
     uint8_t found = 0;
+    uint8_t maches;
+    fatDir_t* dir = NULL;
+    uint32_t dirCnt = 0;
     if(parent->name[0] == '/' && parent->name[1] == '\0') {
         // Finding file in the root directory
-        uint8_t maches;
-        for(uint32_t i = 0; i < fs->bs->rootDirEnts; ++i) {
-            for(uint8_t j = 0; j < 11; ++j){
-                if(name[j] == fs->rootDir[i].name[j])
-                    ++maches;
-            }
-            if(maches == 11){
-                foundFile = &fs->rootDir[i];
-                found = 1;
-            }
-            maches = 0;
-        }
+        dir    = fs->rootDir;
+        dirCnt = fs->bs->rootDirEnts;
     }else {
-
+        dirCnt = (fs->bs->spc * fs->bs->bps)/sizeof(fatDir_t);
+        fatDir_t* dir = malloc(dirCnt);
+        vfsRead(parent, 0, (fs->bs->spc * fs->bs->bps), dir);
+        termPrint("k");
     }
 
+    for(uint32_t i = 0; i < dirCnt; ++i) {
+        for(uint8_t j = 0; j < 11; ++j){
+            if(name[j] == dir[i].name[j])
+                ++maches;
+        }
+        if(maches == 11) {
+            foundFile = &dir[i];
+            found = 1;
+        }
+        maches = 0;
+    }
     if(!found)
         return NULL;
 
@@ -104,12 +114,14 @@ vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name) {
 
     fileNode->dev = parent->dev;
 
+    fileNode->size = foundFile->size;
     fileNode->fsNum = foundFile->lowClustNum;
 
     fileNode->read     = fat12Read;
     fileNode->write    = fat12Write;
     fileNode->open     = fat12Open;
     fileNode->findFile = fat12FindFile;
+
 
     return fileNode;
 }

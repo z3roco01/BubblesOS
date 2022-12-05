@@ -37,62 +37,35 @@ void kmain() {
     vfsNode_t* ataNode = createAtaNode(ataDev);
 
     fat12Fs_t* fat12Fs = fat12Init(ataNode);
+    uint8_t* balls = malloc(512);
 
     vfsNode_t* test = vfsFindFile(fat12Fs->rootNode, "TEST       ");
+    vfsRead(test, 0, 512, balls);
+    termPrint(balls);
+    vfsNode_t* dir = vfsFindFile(fat12Fs->rootNode, "DIR        ");
 
-    if(test != NULL) {
+    fatDir_t* dirs = malloc(512);
+    vfsRead(dir, 0, dir->size, dirs);
+    termPrint(dirs[0].name);
+    termPrint("\n");
+
+    /*if(dir != NULL) {
         char* buf = malloc(512);
-        termPrint(test->name);
+        termPrint(dir->name);
         termPrint("\n");
-        vfsRead(test, 0, 512, buf);
-        termPrint(buf);
+        vfsNode_t* test2 = vfsFindFile(dir, "TEST2      ");
+        termPrintHex(test2->name[0]);
+        termPrint(test2->name);
+        termPrint("\n");
+
+        if(test2 != NULL) {
+            vfsRead(test2, 0, 512, buf);
+            termPrint(buf);
+        }else {
+            termPrint("TEST2 NOT FOUND !!\n");
+        }
     }else {
-        termPrint("NOT FOUND");
-    }
-
-    while(1) {}
-/*
-    // Read the root dir
-
-
-    // find file in the root dir with the same name as compName
-    char* compName = "TEST       ";
-    fatDir_t foundFile;
-    uint8_t found = 0;
-    uint8_t maches;
-    for(uint32_t i = 0; i < bs.rootDirEnts; ++i) {
-        for(uint8_t j = 0; j < 11; ++j){
-            if(compName[j] == rootDir[i].name[j])
-                ++maches;
-        }
-        if(maches == 11){
-            foundFile = rootDir[i];
-            found = 1;
-        }
-        maches = 0;
-    }
-
-    if(found) {
-        uint32_t bpc = bs.spc * bs.bps;
-        uint32_t bufSize = (foundFile.size % bpc == 0) ? foundFile.size : foundFile.size + (bpc - (foundFile.size % bpc));
-        uint8_t* buf = malloc(bufSize);
-        uint32_t off = 0;
-        // Read the file
-        uint16_t curClust = foundFile.lowClustNum;
-
-        do {
-            uint32_t lba = rootDirEnd + (curClust - 2) * bs.spc;
-
-            ataPioRead28(lba, bs.spc, &buf[off]);
-
-            off += bs.spc * bs.bps-1;
-
-            curClust = (curClust % 2) == 0 ? *((uint16_t *) &fat[(curClust * 3) / 2]) & 0x0FFF : *((uint16_t *) &fat[(curClust * 3) / 2]) >> 4;
-
-        } while (curClust < 0x0FF8);
-        termPrint((char*)foundFile.name);
-        termPrint(":\n");
-        termPrint((char*)buf);
+        termPrint("DIR NOT FOUND !!\n");
     }*/
 
     while(1) {}

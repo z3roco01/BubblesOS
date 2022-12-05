@@ -14,8 +14,9 @@ void vfsInit() {
 }
 
 uint32_t vfsRead(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf) {
-    if(node != NULL && node->read != NULL)
+    if(node != NULL && node->read != NULL) {
         return node->read(node, offset, size, buf);
+    }
     return VFS_FAILURE;
 }
 
@@ -36,7 +37,7 @@ void vfsClose(vfsNode_t* node) {
 }
 
 vfsNode_t* vfsFindFile(vfsNode_t* parent, const char* name) {
-    if(parent != NULL && parent->findFile)
+    if(parent != NULL && (parent->flags & VFS_FLAGS_DIR) && parent->findFile)
         return parent->findFile(parent, name);
     return NULL;
 }
