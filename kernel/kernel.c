@@ -42,12 +42,6 @@ void kmain() {
     vfsNode_t* test = vfsFindFile(fat12Fs->rootNode, "TEST       ");
     vfsRead(test, 0, 512, balls);
     termPrint(balls);
-    vfsNode_t* dir = vfsFindFile(fat12Fs->rootNode, "DIR        ");
-
-    fatDir_t* dirs = malloc(512);
-    vfsRead(dir, 0, dir->size, dirs);
-    termPrint(dirs[0].name);
-    termPrint("\n");
 
     /*if(dir != NULL) {
         char* buf = malloc(512);

@@ -51,10 +51,15 @@ uint32_t fat12Read(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf) {
     uint32_t diskOff = 0;
     do {
         diskOff = fs->rootDirEnd + ((curClust - 2) * fs->bs->spc) * fs->bs->bps;
+        if(node->name[0] == 'D') {
+        }
         vfsRead(fs->dev, diskOff, 512, &buf[off]);
         off += fs->bs->spc * fs->bs->bps - 1;
         curClust = (curClust % 2) == 0 ? *((uint16_t*)&fs->fat[(curClust * 3) / 2]) & 0x00FF : *((uint16_t*)&fs->fat[(curClust * 3) / 2]) >> 4;
-    } while(curClust < 0xFF8);
+
+        if(node->flags == VFS_FLAGS_DIR)
+            break;
+    }while(curClust < 0xFF8);
 
     return size;
 }
@@ -83,10 +88,10 @@ vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name) {
         dir    = fs->rootDir;
         dirCnt = fs->bs->rootDirEnts;
     }else {
+        // Finding file in any other dir
         dirCnt = (fs->bs->spc * fs->bs->bps)/sizeof(fatDir_t);
-        fatDir_t* dir = malloc(dirCnt);
+        dir = malloc((fs->bs->spc * fs->bs->bps));
         vfsRead(parent, 0, (fs->bs->spc * fs->bs->bps), dir);
-        termPrint("k");
     }
 
     for(uint32_t i = 0; i < dirCnt; ++i) {
@@ -121,7 +126,6 @@ vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name) {
     fileNode->write    = fat12Write;
     fileNode->open     = fat12Open;
     fileNode->findFile = fat12FindFile;
-
 
     return fileNode;
 }
