@@ -89,8 +89,8 @@ void termPrint(const char* str) {
 }
 
 void termPrintHex(uint32_t num){
-    char hexStr[9];
-    hexStr[8] = 0;
+    char* hexStr = calloc(9);
+    hexStr[8] = '\0';
     uint8_t i = 0;
     while(i<8){
         uint8_t curNyble = num & 0xF;

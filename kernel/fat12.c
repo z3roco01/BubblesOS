@@ -42,6 +42,18 @@ fat12Fs_t* fat12Init(vfsNode_t* dev) {
     return fs;
 }
 
+uint32_t fat12FindFreeclust(fat12Fs_t* fs) {
+    uint16_t* fat = (uint16_t*)fs->fat;
+    uint32_t fatEntries = (fs->bs->spf * fs->bs->bps) / 12;
+
+    uint16_t curClustNum = 9;
+    uint16_t curClust = (curClustNum % 2) == 0 ? *((uint16_t*)&fs->fat[(curClustNum * 3) / 2]) & 0x00FF : *((uint16_t*)&fs->fat[(curClustNum * 3) / 2]) >> 4;
+    while(curClust != 0x0000) {
+        curClustNum++;
+        curClust = (curClustNum % 2) == 0 ? *((uint16_t*)&fs->fat[(curClustNum * 3) / 2]) & 0x00FF : *((uint16_t*)&fs->fat[(curClustNum * 3) / 2]) >> 4;
+    }
+}
+
 uint32_t fat12Read(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf) {
     fat12Fs_t* fs = (fat12Fs_t*)node->dev;
     uint32_t bpc = fs->bs->spc * fs->bs->bps;
@@ -121,6 +133,26 @@ vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name) {
 
     fileNode->size = foundFile->size;
     fileNode->fsNum = foundFile->lowClustNum;
+
+    fileNode->aDate.day   = foundFile->aDate & FAT12_DAY_MASK;
+    fileNode->aDate.month = foundFile->aDate & FAT12_MONTH_MASK;
+    fileNode->aDate.year  = FAT12_EPOCH + (foundFile->aDate & FAT12_YEAR_MASK);
+
+    fileNode->cDate.day   = foundFile->cDate & FAT12_DAY_MASK;
+    fileNode->cDate.month = foundFile->cDate & FAT12_MONTH_MASK;
+    fileNode->cDate.year  = FAT12_EPOCH + (foundFile->cDate & FAT12_YEAR_MASK);
+
+    fileNode->mDate.day   = foundFile->mDate & FAT12_DAY_MASK;
+    fileNode->mDate.month = foundFile->mDate & FAT12_MONTH_MASK;
+    fileNode->mDate.year  = FAT12_EPOCH + (foundFile->mDate & FAT12_YEAR_MASK);
+
+    fileNode->cTime.sec  = (foundFile->cTime & FAT12_SEC_MASK) * 2;
+    fileNode->cTime.min  = foundFile->cTime & FAT12_MIN_MASK;
+    fileNode->cTime.hour = foundFile->cTime & FAT12_HOUR_MASK;
+
+    fileNode->mTime.sec  = (foundFile->mTime & FAT12_SEC_MASK) * 2;
+    fileNode->mTime.min  = foundFile->mTime & FAT12_MIN_MASK;
+    fileNode->mTime.hour = foundFile->mTime & FAT12_HOUR_MASK;
 
     fileNode->read     = fat12Read;
     fileNode->write    = fat12Write;

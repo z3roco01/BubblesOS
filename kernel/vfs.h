@@ -23,6 +23,18 @@ typedef void            (*closeCallbck)    (struct vfsNode*);
 typedef struct vfsNode* (*findFileCallbck) (struct vfsNode*, const char*);
 typedef struct dirent*  (*readDirCallbck)  (struct vfsNode*, uint32_t);
 
+typedef struct vfsTime {
+    uint8_t sec;
+    uint8_t min;
+    uint8_t hour;
+} vfsTime_t;
+
+typedef struct vfsDate {
+    uint8_t day;
+    uint8_t month;
+    uint32_t year;
+} vfsDate_t;
+
 typedef struct vfsNode {
     char    name[255];
     void*   dev;
@@ -30,9 +42,12 @@ typedef struct vfsNode {
     uint8_t flags;       // flags about the node
     uint8_t openFlags;   // flags used with open()
 
-    uint32_t ctime;
-    uint32_t mtime;
-    uint32_t atime;
+    vfsTime_t cTime;
+    vfsTime_t mTime;
+    vfsTime_t aTime;
+    vfsDate_t cDate;
+    vfsDate_t mDate;
+    vfsDate_t aDate;
 
     uint32_t fsNum;     // Used for cluster number or inode number
     uint32_t size;
