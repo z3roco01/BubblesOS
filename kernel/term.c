@@ -1,4 +1,5 @@
 #include "term.h"
+#include <stdlib.h>
 
 const char* HEX_MAP = "0123456789ABCDEF";
 vgaColour_t termColour;
@@ -114,4 +115,5 @@ void termPrintHex(uint32_t num){
     }
 
     termPrint(hexStr);
+    free(hexStr);
 }

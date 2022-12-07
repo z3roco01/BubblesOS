@@ -37,30 +37,10 @@ void kmain() {
     vfsNode_t* ataNode = createAtaNode(ataDev);
 
     fat12Fs_t* fat12Fs = fat12Init(ataNode);
-    uint8_t* balls = malloc(512);
 
     vfsNode_t* test = vfsFindFile(fat12Fs->rootNode, "TEST       ");
-    vfsRead(test, 0, 512, balls);
-    termPrint(balls);
 
-    /*if(dir != NULL) {
-        char* buf = malloc(512);
-        termPrint(dir->name);
-        termPrint("\n");
-        vfsNode_t* test2 = vfsFindFile(dir, "TEST2      ");
-        termPrintHex(test2->name[0]);
-        termPrint(test2->name);
-        termPrint("\n");
-
-        if(test2 != NULL) {
-            vfsRead(test2, 0, 512, buf);
-            termPrint(buf);
-        }else {
-            termPrint("TEST2 NOT FOUND !!\n");
-        }
-    }else {
-        termPrint("DIR NOT FOUND !!\n");
-    }*/
+    termPrintHex(fat12FindFreeclust(fat12Fs));
 
     while(1) {}
 }
