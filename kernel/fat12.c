@@ -76,11 +76,22 @@ uint32_t fat12Read(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf) {
     return size;
 }
 
+
 uint32_t fat12Write(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf) {
     return size;
 }
 
 void fat12Open(vfsNode_t* node, uint32_t flags) {
+}
+
+vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name) {
+    uint32_t freeClust = fat12FindFreeclust(parent->dev);
+    fatDir_t* newFile = malloc(sizeof(fatDir_t));
+
+    newFile->lowClustNum = freeClust;
+
+    free(newFile);
+    return NULL;
 }
 
 vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name) {

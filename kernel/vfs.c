@@ -36,6 +36,12 @@ void vfsClose(vfsNode_t* node) {
         node->close(node);
 }
 
+vfsNode_t* vfsMkFile(vfsNode_t* parent, const char* name) {
+    if(parent != NULL && (parent->flags & VFS_FLAGS_DIR) && parent->mkFile != NULL)
+        return parent->mkFile(parent, node);
+    return NULL
+}
+
 vfsNode_t* vfsFindFile(vfsNode_t* parent, const char* name) {
     if(parent != NULL && (parent->flags & VFS_FLAGS_DIR) && parent->findFile)
         return parent->findFile(parent, name);

@@ -20,6 +20,7 @@ typedef uint32_t        (*readCallbck)     (struct vfsNode*, uint32_t, uint32_t,
 typedef uint32_t        (*writeCallbck)    (struct vfsNode*, uint32_t, uint32_t, void*);
 typedef void            (*openCallbck)     (struct vfsNode*, uint32_t);
 typedef void            (*closeCallbck)    (struct vfsNode*);
+typedef struct vfsNode* (*mkFileCallbck) (struct vfsNode*, const char*);
 typedef struct vfsNode* (*findFileCallbck) (struct vfsNode*, const char*);
 typedef struct dirent*  (*readDirCallbck)  (struct vfsNode*, uint32_t);
 
@@ -56,6 +57,7 @@ typedef struct vfsNode {
     writeCallbck    write;
     openCallbck     open;
     closeCallbck    close;
+    mkFileCallbck   mkFile;
     findFileCallbck findFile;
     readDirCallbck  readDir;
 } vfsNode_t;
@@ -75,6 +77,7 @@ uint32_t   vfsRead(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf);
 uint32_t   vfsWrite(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf);
 void       vfsOpen(vfsNode_t* node, uint32_t flags);
 void       vfsClose(vfsNode_t* node);
+vfsNode_t* vfsMkFile(vfsNode_t* parent, const char* name);
 vfsNode_t* vfsFindFile(vfsNode_t* parent, const char* name);
 dirent_t*  vfsReadDir(vfsNode_t* node, uint32_t index);
 void       vfsMount(vfsNode_t* node, char* mountpoint);

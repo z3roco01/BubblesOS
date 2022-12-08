@@ -76,6 +76,7 @@ uint32_t   fat12Read(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf)
 uint32_t   fat12Write(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf);
 void       fat12Open(vfsNode_t* node, uint32_t flags);
 void       fat12Close(vfsNode_t* node);
+vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name);
 vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name);
 
 uint32_t fat12FindFreeclust(fat12Fs_t* fs);
