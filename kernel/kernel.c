@@ -38,9 +38,12 @@ void kmain() {
 
     fat12Fs_t* fat12Fs = fat12Init(ataNode);
 
-    vfsNode_t* test = vfsFindFile(fat12Fs->rootNode, "TEST       ");
+    fat12List(fat12Fs);
     vfsNode_t* newFile = vfsMkFile(fat12Fs->rootNode, "NEWFILE    ");
-    termPrintHex(fat12FindFreeclust(fat12Fs));
+
+    termPrint("\n");
+
+    fat12List(fat12Fs);
 
     while(1) {}
 }

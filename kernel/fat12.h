@@ -14,7 +14,9 @@
 #define FAT12_MONTH_MASK 0b0000001111000000
 #define FAT12_DAY_MASK   0b0000000000111111
 
+#define FAT12_BAD_CLUST     0x0FF7
 #define FAT12_END_CLUST_MIN 0x0FF8
+#define FAT12_END_CLUST_MAX 0x0FFF
 
 typedef struct fatBs {
     uint8_t  jmpBootcode[3];
@@ -79,5 +81,5 @@ void       fat12Close(vfsNode_t* node);
 vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name);
 vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name);
 
-uint32_t fat12FindFreeclust(fat12Fs_t* fs);
+void fat12List(fat12Fs_t* fs);
 #endif

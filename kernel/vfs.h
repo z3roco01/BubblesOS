@@ -20,7 +20,7 @@ typedef uint32_t        (*readCallbck)     (struct vfsNode*, uint32_t, uint32_t,
 typedef uint32_t        (*writeCallbck)    (struct vfsNode*, uint32_t, uint32_t, void*);
 typedef void            (*openCallbck)     (struct vfsNode*, uint32_t);
 typedef void            (*closeCallbck)    (struct vfsNode*);
-typedef struct vfsNode* (*mkFileCallbck) (struct vfsNode*, const char*);
+typedef struct vfsNode* (*mkFileCallbck)   (struct vfsNode*, const char*);
 typedef struct vfsNode* (*findFileCallbck) (struct vfsNode*, const char*);
 typedef struct dirent*  (*readDirCallbck)  (struct vfsNode*, uint32_t);
 

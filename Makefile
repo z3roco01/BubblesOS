@@ -28,6 +28,7 @@ kern: linker.ld $(ASOBJS) $(COBJS)
 	$(CC) $(COBJS) $(ASOBJS) -o $(KERN_TARG) $(CFLAGS) -T $(LINKSCRIPT)
 	mcopy -i $(IMAGE) $(KERN_TARG) "::kernel.bin" -o
 	mcopy -i $(IMAGE) test "::test" -o
+	mcopy -i $(IMAGE) test2 "::test2" -o
 
 $(COBJS): $(CSRC)
 	$(CC) $(CFLAGS) -c $(CSRC)
