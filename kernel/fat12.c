@@ -97,6 +97,8 @@ void fat12Open(vfsNode_t* node, uint32_t flags) {
 }
 
 vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name) {
+    if(vfsFindFile(parent, name) != NULL)
+        return NULL;
     fat12Fs_t* fs = parent->dev;
     uint32_t freeClust = fat12FindFreeclust(parent->dev);
     fatDir_t* newFile = malloc(sizeof(fatDir_t));
@@ -133,8 +135,7 @@ vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name) {
         vfsRead(parent, 0, (fs->bs->spc * fs->bs->bps), dirs);
     }
     // Mark cluster as end of chain in the fat
-    uint32_t fatIndx = (freeClust * 3) / 2;
-    ((uint16_t*)fs->fat)[fatIndx] = ((freeClust & 0x0001) == 0 ? (fs->fat[fatIndx] & 0xF000) | FAT12_END_CLUST_MAX : (FAT12_END_CLUST_MAX << 4) | (fs->fat[fatIndx] & 0x000F));
+    ((uint16_t*)fs->fat)[freeClust] = ((freeClust & 0x0001) == 0 ? (((uint16_t*)fs->fat)[freeClust] & 0xF000) | FAT12_END_CLUST_MAX : (FAT12_END_CLUST_MAX << 4) | (((uint16_t*)fs->fat)[freeClust] & 0x000F));
 
     // Find a free entry in the directory
     uint32_t i = 0;
