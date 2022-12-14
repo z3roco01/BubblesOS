@@ -51,16 +51,24 @@ void fat12FsFlush(fat12Fs_t* fs) {
     vfsWrite(fs->dev, fs->rootDirStart, fs->rootDirEnd - fs->rootDirStart, fs->rootDir);
 }
 
+uint32_t fat12GetClust(fat12Fs_t* fs, uint32_t clustNum) {
+    return (clustNum & 0x0001) == 0 ? *((uint16_t*)&fs->fat[(clustNum * 3) / 2]) & 0x00FF : *((uint16_t*)&fs->fat[(clustNum * 3) / 2]) >> 4;
+}
+
+void fat12SetClust(fat12Fs_t* fs, uint32_t clustNum) {
+    ((uint16_t*)fs->fat)[clustNum] = ((clustNum & 0x0001) == 0 ? (((uint16_t*)fs->fat)[clustNum] & 0xF000) | FAT12_END_CLUST_MAX : (FAT12_END_CLUST_MAX << 4) | (((uint16_t*)fs->fat)[clustNum] & 0x000F));
+}
+
 uint32_t fat12FindFreeclust(fat12Fs_t* fs) {
     uint16_t* fat = (uint16_t*)fs->fat;
     uint32_t fatEntries = (fs->bs->spf * fs->bs->bps) / 12;
 
-    uint16_t curClustNum = 9;
-    uint16_t curClust = (curClustNum & 0x0001) == 0 ? *((uint16_t*)&fs->fat[(curClustNum * 3) / 2]) & 0x00FF : *((uint16_t*)&fs->fat[(curClustNum * 3) / 2]) >> 4;
+    uint16_t curClustNum = 2;
+    uint16_t curClust = fat12GetClust(fs, curClustNum);
     while(curClust != 0x0000) {
-        curClustNum++;
-        curClust = (curClustNum & 0x0001) == 0 ? *((uint16_t*)&fs->fat[(curClustNum * 3) / 2]) & 0x00FF : *((uint16_t*)&fs->fat[(curClustNum * 3) / 2]) >> 4;
+        curClust = fat12GetClust(fs, curClustNum++);
     }
+
     if(curClustNum >= FAT12_BAD_CLUST)
         return 0x0000;
     return curClustNum;
@@ -75,11 +83,11 @@ uint32_t fat12Read(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf) {
     uint32_t diskOff = 0;
     do {
         diskOff = fs->rootDirEnd + ((curClust - 2) * fs->bs->spc) * fs->bs->bps;
-        if(node->name[0] == 'D') {
-        }
+
         vfsRead(fs->dev, diskOff, 512, &buf[off]);
+
         off += fs->bs->spc * fs->bs->bps - 1;
-        curClust = (curClust & 0x0001) == 0 ? *((uint16_t*)&fs->fat[(curClust * 3) / 2]) & 0x00FF : *((uint16_t*)&fs->fat[(curClust * 3) / 2]) >> 4;
+        curClust = fat12GetClust(fs, curClust);
 
         if(node->flags == VFS_FLAGS_DIR)
             break;
@@ -88,8 +96,27 @@ uint32_t fat12Read(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf) {
     return size;
 }
 
-
 uint32_t fat12Write(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf) {
+    fat12Fs_t* fs = (fat12Fs_t*)node->dev;
+    uint32_t bpc = fs->bs->spc * fs->bs->bps;
+    uint32_t off = 0;
+
+    uint16_t curClust = node->fsNum;
+    uint32_t diskOff = 0;
+    diskOff = fs->rootDirEnd + ((curClust-2) * fs->bs->spc) * fs->bs->bps;
+    vfsWrite(fs->dev, diskOff, size, buf);
+    /*do {
+        diskOff = fs->rootDirEnd + ((curClust-2) * fs->bs->spc) * fs->bs->bps;
+        vfsWrite(fs->dev, diskOff, size, buf);
+        off += fs->bs->spc * fs->bs->bps - 1;
+        curClust = fat12GetClust(fs, curClust);
+
+        if(node->flags == VFS_FLAGS_DIR)
+            break;
+    }while(curClust < 0xFF8);*/
+
+    node->size = size;
+
     return size;
 }
 
@@ -119,8 +146,9 @@ vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name) {
     newFile->mTime     = 0;
     newFile->mDate     = 0;
 
-    newFile->lowClustNum = freeClust;
-    newFile->size        = 0;
+    newFile->highClustNum = 0;
+    newFile->lowClustNum  = freeClust;
+    newFile->size         = 0;
 
     fatDir_t* dirs   = NULL;
     uint32_t  dirCnt = 0;
@@ -135,7 +163,7 @@ vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name) {
         vfsRead(parent, 0, (fs->bs->spc * fs->bs->bps), dirs);
     }
     // Mark cluster as end of chain in the fat
-    ((uint16_t*)fs->fat)[freeClust] = ((freeClust & 0x0001) == 0 ? (((uint16_t*)fs->fat)[freeClust] & 0xF000) | FAT12_END_CLUST_MAX : (FAT12_END_CLUST_MAX << 4) | (((uint16_t*)fs->fat)[freeClust] & 0x000F));
+    fat12SetClust(fs, freeClust);
 
     // Find a free entry in the directory
     uint32_t i = 0;
@@ -150,12 +178,13 @@ vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name) {
     memcpy(newFile, &dirs[i], sizeof(fatDir_t));
 
     if(parent->name[0] != '/' && parent->name[1] != '\0') {
+        // Flush the changes to the disk and free malloc'd memory
         vfsWrite(parent, 0, fs->bs->spc * fs->bs->bps, dirs);
 
         free(dirs);
     }
 
-    // Make vfs node for the new file
+    // Flush changes to disk
     fat12FsFlush(fs);
 
     free(newFile);
