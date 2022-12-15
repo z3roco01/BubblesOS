@@ -52,6 +52,15 @@ void memcpy(void* s1, void* s2, uint32_t n) {
     }
 }
 
+// returns 1 when not equal and 0 when equal
+uint32_t memcmp(void* s1, void* s2, uint32_t n) {
+    for(uint32_t i = 0; i < n; ++i) {
+        if(((uint8_t*)s1)[i] != ((uint8_t*)s2)[i])
+            return 1;
+    }
+    return 0;
+}
+
 void memset(void * s, uint8_t c, uint32_t n) {
     for(uint32_t i = 0; i < n; ++i) {
         ((uint8_t*)s)[i] = c;

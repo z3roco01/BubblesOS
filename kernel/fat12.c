@@ -51,15 +51,15 @@ void fat12FsFlush(fat12Fs_t* fs) {
     vfsWrite(fs->dev, fs->rootDirStart, fs->rootDirEnd - fs->rootDirStart, fs->rootDir);
 }
 
-uint32_t fat12GetClust(fat12Fs_t* fs, uint32_t clustNum) {
-    return (clustNum & 0x0001) == 0 ? *((uint16_t*)&fs->fat[(clustNum * 3) / 2]) & 0x00FF : *((uint16_t*)&fs->fat[(clustNum * 3) / 2]) >> 4;
+uint16_t fat12GetClust(fat12Fs_t* fs, uint16_t clustNum) {
+    return (clustNum & 0x0001) == 0 ? (((uint16_t*)fs->fat)[(clustNum * 3) / 2]) & 0x00FF : (((uint16_t*)fs->fat)[(clustNum * 3) / 2]) >> 4;
 }
 
-void fat12SetClust(fat12Fs_t* fs, uint32_t clustNum) {
-    ((uint16_t*)fs->fat)[clustNum] = ((clustNum & 0x0001) == 0 ? (((uint16_t*)fs->fat)[clustNum] & 0xF000) | FAT12_END_CLUST_MAX : (FAT12_END_CLUST_MAX << 4) | (((uint16_t*)fs->fat)[clustNum] & 0x000F));
+void fat12SetClust(fat12Fs_t* fs, uint16_t clustNum, uint16_t value) {
+    ((uint16_t*)fs->fat)[(clustNum * 3) / 2] = ((clustNum & 0x0001) == 0 ? (((uint16_t*)fs->fat)[(clustNum * 3) / 2] & 0xF000) | (value & 0x0FFF) : ((FAT12_END_CLUST_MAX & 0x0FFF) << 4) | (((uint16_t*)fs->fat)[(clustNum * 3) / 2] & 0x000F));
 }
 
-uint32_t fat12FindFreeclust(fat12Fs_t* fs) {
+uint16_t fat12FindFreeclust(fat12Fs_t* fs) {
     uint16_t* fat = (uint16_t*)fs->fat;
     uint32_t fatEntries = (fs->bs->spf * fs->bs->bps) / 12;
 
@@ -117,6 +117,7 @@ uint32_t fat12Write(vfsNode_t* node, uint32_t offset, uint32_t size, void* buf) 
 
     node->size = size;
 
+
     return size;
 }
 
@@ -124,10 +125,11 @@ void fat12Open(vfsNode_t* node, uint32_t flags) {
 }
 
 vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name) {
+    return NULL;
     if(vfsFindFile(parent, name) != NULL)
         return NULL;
     fat12Fs_t* fs = parent->dev;
-    uint32_t freeClust = fat12FindFreeclust(parent->dev);
+    uint16_t freeClust = fat12FindFreeclust(parent->dev);
     fatDir_t* newFile = malloc(sizeof(fatDir_t));
 
     if(freeClust == 0x0000)
@@ -148,7 +150,7 @@ vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name) {
 
     newFile->highClustNum = 0;
     newFile->lowClustNum  = freeClust;
-    newFile->size         = 0;
+    newFile->size         = 16;
 
     fatDir_t* dirs   = NULL;
     uint32_t  dirCnt = 0;
@@ -163,7 +165,7 @@ vfsNode_t* fat12MkFile(vfsNode_t* parent, const char* name) {
         vfsRead(parent, 0, (fs->bs->spc * fs->bs->bps), dirs);
     }
     // Mark cluster as end of chain in the fat
-    fat12SetClust(fs, freeClust);
+    fat12SetClust(fs, freeClust, FAT12_END_CLUST_MAX);
 
     // Find a free entry in the directory
     uint32_t i = 0;
@@ -215,15 +217,11 @@ vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name) {
     }
 
     for(uint32_t i = 0; i < dirCnt; ++i) {
-        for(uint8_t j = 0; j < 11; ++j){
-            if(name[j] == dir[i].name[j])
-                ++maches;
-        }
-        if(maches == 11) {
+        if(!memcmp(dir[i].name, name, 11)) {
             foundFile = &dir[i];
             found = 1;
+            break;
         }
-        maches = 0;
     }
     if(!found)
         return NULL;
@@ -232,7 +230,7 @@ vfsNode_t* fat12FindFile(vfsNode_t* parent, const char* name) {
     memcpy(foundFile->name, fileNode->name, 11);
     fileNode->name[11] = '\0';
 
-    if(foundFile->attrs == 0x10)
+    if(foundFile->attrs | 0x10)
         fileNode->flags |= VFS_FLAGS_DIR;
     else
         fileNode->flags |= VFS_FLAGS_FILE;

@@ -38,20 +38,7 @@ void kmain() {
 
     fat12Fs_t* fat12Fs = fat12Init(ataNode);
 
-    fat12List(fat12Fs);
-    vfsNode_t* newFile = vfsMkFile(fat12Fs->rootNode, "NEWFILE    ");
 
-    termPrint("\n");
-
-    fat12List(fat12Fs);
-
-    uint8_t* data = malloc(16);
-    memcpy("written from OS\n", data, 16);
-    if(newFile != NULL) {
-        vfsWrite(newFile, 0, 16, data);
-    }else {
-        termPrint("NULL !!\n");
-    }
 
     while(1) {}
 }
