@@ -1,10 +1,10 @@
 #ifndef TERM_H
 #define TERM_H
 
-#include "types.h"
-#include "vga.h"
-#include "ports.h"
-#include "mm.h"
+#include "../../misc/types.h"
+#include "../video/vga.h"
+#include "../ports/ports.h"
+#include "../../mm/mm.h"
 
 void clearScreen(void);
 void enableCursor(uint8_t cursorStart, uint8_t cursorEnd);

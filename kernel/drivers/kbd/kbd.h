@@ -1,10 +1,10 @@
 #ifndef KBD_H
 #define KBD_H
 
-#include "term.h"
-#include "ports.h"
-#include "pic.h"
-#include "types.h"
+#include "../term/term.h"
+#include "../ports/ports.h"
+#include "../pic/pic.h"
+#include "../../misc/types.h"
 
 #define KP_CAPS_MASK  0b00000001
 #define KP_NUM_MASK   0b00000010

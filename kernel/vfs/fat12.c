@@ -1,6 +1,4 @@
 #include "fat12.h"
-#include "term.h"
-#include "vfs.h"
 
 fat12Fs_t* fat12Init(vfsNode_t* dev) {
     fat12Fs_t* fs = malloc(sizeof(fat12Fs_t));

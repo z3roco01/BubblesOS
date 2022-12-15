@@ -1,10 +1,10 @@
 #ifndef VFS_H
 #define VFS_H
 
-#include "types.h"
-#include "genTree.h"
-#include "dll.h"
-#include "mm.h"
+#include "../misc/types.h"
+#include "../misc/genTree.h"
+#include "../misc/dll.h"
+#include "../mm/mm.h"
 
 #define VFS_FAILURE 0
 #define VFS_SUCCESS 1

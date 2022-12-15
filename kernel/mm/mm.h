@@ -1,7 +1,7 @@
 #ifndef MM_H
 #define MM_H
 
-#include "types.h"
+#include "../misc/types.h"
 
 #define MEM_BLK_FLAGS_IS_FREE 0b00000001
 #define MEM_BLK_FLAGS_IS_END  0b00000010

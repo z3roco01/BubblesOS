@@ -1,11 +1,11 @@
 #ifndef ATA_H
 #define ATA_H
 
-#include "ports.h"
-#include "types.h"
-#include "term.h"
-#include "mm.h"
-#include "vfs.h"
+#include "../ports/ports.h"
+#include "../../misc/types.h"
+#include "../term/term.h"
+#include "../../mm/mm.h"
+#include "../../vfs/vfs.h"
 
 // ATA primary ports
 #define ATA_PRIMARY_DATA        0x1F0

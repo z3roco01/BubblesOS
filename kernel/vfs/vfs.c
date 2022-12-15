@@ -1,7 +1,4 @@
 #include "vfs.h"
-#include "dll.h"
-#include "genTree.h"
-#include "term.h"
 
 genTree_t* vfsTree;
 

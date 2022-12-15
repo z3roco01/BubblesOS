@@ -1,5 +1,4 @@
 #include "kbd.h"
-#include "term.h"
 
 static const char KEYMAP[0xFF] = {
 //Unused

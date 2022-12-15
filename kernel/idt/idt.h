@@ -1,9 +1,9 @@
 #ifndef IDT_H
 #define IDT_H
 
-#include "types.h"
-#include "term.h"
-#include "kbd.h"
+#include "../misc/types.h"
+#include "../drivers/term/term.h"
+#include "../drivers/kbd/kbd.h"
 
 typedef struct idtEntry {
     uint16_t basel;

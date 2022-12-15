@@ -1,10 +1,10 @@
 #ifndef FAT12_H
 #define FAT12_H
 
-#include "ata.h"
+#include "../drivers/ata/ata.h"
 #include "vfs.h"
-#include "mm.h"
-#include "types.h"
+#include "../mm/mm.h"
+#include "../misc/types.h"
 
 #define FAT12_EPOCH      1980
 #define FAT12_HOUR_MASK  0b1111100000000000

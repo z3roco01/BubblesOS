@@ -1,5 +1,4 @@
 #include "mm.h"
-#include "term.h"
 
 memBlk_t* memHead = NULL;
 uint32_t curAddr = 0x10000;

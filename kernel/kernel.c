@@ -1,14 +1,12 @@
-#include "types.h"
-#include "ata.h"
-#include "mm.h"
-#include "ports.h"
-#include "term.h"
-#include "pic.h"
-#include "idt.h"
-#include "kbd.h"
-#include "mm.h"
-#include "fat12.h"
-#include "vfs.h"
+#include "misc/types.h"
+#include "drivers/ata/ata.h"
+#include "drivers/term/term.h"
+#include "drivers/pic/pic.h"
+#include "drivers/kbd/kbd.h"
+#include "idt/idt.h"
+#include "mm/mm.h"
+#include "vfs/fat12.h"
+#include "vfs/vfs.h"
 
 void kmain() {
     termInit();
