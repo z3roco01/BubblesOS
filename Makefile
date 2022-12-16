@@ -26,7 +26,7 @@ VFS_DIR=vfs
 KERNDRV_DIR=$(KERN_DIR)/$(DRV_DIR)
 
 C_DIRS= $(KERNDRV_DIR)/$(ATA_DIR) $(KERNDRV_DIR)/$(KBD_DIR) $(KERNDRV_DIR)/$(PIC_DIR) $(KERNDRV_DIR)/$(PORTS_DIR) $(KERNDRV_DIR)/$(TERM_DIR) $(KERNDRV_DIR)/$(VIDEO_DIR) $(KERN_DIR)/$(VFS_DIR) $(KERN_DIR)/$(MISC_DIR) $(KERN_DIR)/$(IDT_DIR) $(KERN_DIR)/$(MM_DIR)
-OBJS= $(KERN_DIR)/kernel.c $(wildcard $(KERNDRV_DIR)/$(ATA_DIR)/*.o) $(wildcard $(KERNDRV_DIR)/$(KBD_DIR)/*.o) $(wildcard $(KERNDRV_DIR)/$(PIC_DIR)/*.o) $($(KERNDRV_DIR)/$(PORTS_DIR)/*.o) $(wildcard $(KERNDRV_DIR)/$(TERM_DIR)/*.o ) $(wildcard $(KERNDRV_DIR)/$(VIDEO_DIR)/*.o) $(wildcard $(KERN_DIR)/$(VFS_DIR)/*.o) $(wildcard $(KERN_DIR)/$(MISC_DIR)/*.o) $(wildcard $(KERN_DIR)/$(IDT_DIR)/*.o) $(wildcard $(KERN_DIR)/$(MM_DIR)/*.o)
+OBJ=
 
 KERN_TARG=kernel.bin
 
@@ -39,10 +39,10 @@ all: boot kern
 boot: $(BOOT_DIR)/boot.s
 	nasm -fbin $(BOOT_DIR)/boot.s -o $(IMAGE)
 kern: $(C_DIRS)
-	$(foreach makeFile,$(C_DIRS),$(MAKE) --directory=$(makeFile);)
+	$(foreach makeFile,$(C_DIRS),$(MAKE) --directory=$(makeFile) all;)
 	$(CC) -c $(KERN_DIR)/kernel.c $(CFLAGS)
+	$(CC) kernel.o $(KERNDRV_DIR)/$(ATA_DIR)/ata.o $(KERNDRV_DIR)/$(KBD_DIR)/kbd.o $(KERNDRV_DIR)/$(PIC_DIR)/pic.o $(KERNDRV_DIR)/$(PORTS_DIR)/ports.o $(KERNDRV_DIR)/$(TERM_DIR)/term.o $(KERNDRV_DIR)/$(VIDEO_DIR)/vga.o $(KERN_DIR)/$(VFS_DIR)/vfs.o $(KERN_DIR)/$(VFS_DIR)/fat12.o $(KERN_DIR)/$(MISC_DIR)/dll.o $(KERN_DIR)/$(IDT_DIR)/idt.o $(KERN_DIR)/$(IDT_DIR)/isr.o $(KERN_DIR)/$(MM_DIR)/mm.o -o $(KERN_TARG) $(CFLAGS) -T $(LINKSCRIPT)
 
-	$(CC) $(OBJS) -o $(KERN_TARG) $(CFLAGS) -T $(LINKSCRIPT)
 	mcopy -i $(IMAGE) $(KERN_TARG) "::kernel.bin" -o
 	mcopy -i $(IMAGE) test "::test" -o
 	mcopy -i $(IMAGE) test2 "::test2" -o

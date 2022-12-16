@@ -1,7 +1,7 @@
 CC=i686-elf-gcc
 CFLAGS=-std=gnu99 -ffreestanding -O2 -Wall -Wextra -nostdlib -lgcc
 
-SRC=ata.c
+SRC=kbd.c
 OBJ=$(subst .c,.o,$(SRC))
 
 all: $(OBJ) $(AS_OBJ)
