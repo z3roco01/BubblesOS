@@ -2,14 +2,14 @@
 
 const char* HEX_MAP = "0123456789ABCDEF";
 vgaColour_t termColour;
-uint16_t* termBuf = (uint16_t*)0xB8000;
+uint16_t* termBuf = (uint16_t*)0xA0000;
 uint8_t termRow = 0;
 uint8_t termCol = 0;
 
 void clearScreen(void) {
     for(uint8_t y = 0; y < VGA_HEIGHT; ++y) {
         for(uint8_t x = 0; x < VGA_WIDTH; ++x) {
-            termBuf[y * VGA_WIDTH + x] = vgaEntry(' ', termColour);
+            vgaDrawChar(x, y, ' ');
         }
     }
 }
@@ -45,10 +45,7 @@ uint16_t getCursorPos(void) {
 }
 
 void termInit(void) {
-    termColour = vgaEntryColour(VGA_COLOUR_WHITE, VGA_COLOUR_BLUE);
     clearScreen();
-    enableCursor(0, 15);
-    moveCursor(0, 0);
 }
 
 void termPutChar(char c) {
@@ -66,13 +63,14 @@ void termPutChar(char c) {
                     termCol = 0;
                 }
             }
-            vgaPutEntryAt(vgaEntry(' ', termColour), termCol, termRow);
+            vgaDrawChar(termCol*FONT_WIDHT, termRow*FONT_HEIGHT, ' ');
+//            vgaPutEntryAt(vgaEntry(' ', termColour), termCol, termRow);
             break;
         case '\t':
             termPrint("    \0");
             break;
         default:
-            vgaPutEntryAt(vgaEntry(c, termColour), termCol, termRow);
+            vgaDrawChar(termCol*FONT_WIDHT, termRow*FONT_HEIGHT, c);
             if(++termCol == VGA_WIDTH) {
                 termCol = 0;
                 if(++termRow == VGA_HEIGHT)
@@ -85,7 +83,7 @@ void termPutChar(char c) {
 void termPrint(const char* str) {
     for(uint32_t i = 0; i < strlen(str); ++i)
         termPutChar(str[i]);
-    moveCursor(termCol, termRow);
+    //moveCursor(termCol, termRow);
 }
 
 void termPrintHex(uint32_t num){

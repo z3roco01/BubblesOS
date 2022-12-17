@@ -33,8 +33,8 @@ start:
     mov ax, 0x2401
     int 0x15
 
-    ; Set VGA text mode to mode 2
-    mov ax, 0x02
+    ; Set VGA text mode to mode 13
+    mov ax, 0x13
     int 0x10
 
     ; store drive number in the FAT BS

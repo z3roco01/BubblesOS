@@ -64,8 +64,6 @@ void vfsMountRecur(vfsNode_t* curNode, char* path, genTreeNode_t* curTree) {
     path += i;
 
     if(path[0] == '\0'){
-        termPrint("END!!\n");
-        while(1) {}
     }
 
     termPrint(path);
