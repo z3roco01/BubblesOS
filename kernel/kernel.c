@@ -1,3 +1,4 @@
+#include "drivers/video/vga.h"
 #include "misc/types.h"
 #include "drivers/ata/ata.h"
 #include "drivers/term/term.h"
@@ -9,7 +10,7 @@
 #include "vfs/vfs.h"
 
 void kmain() {
-    termInit();
+//    termInit();
 
     termPrint("Kernel init.");
 
@@ -36,7 +37,7 @@ void kmain() {
 
     fat12Fs_t* fat12Fs = fat12Init(ataNode);
 
-
+    //vgaDrawChar(0, 0, 'A');
 
     while(1) {}
 }

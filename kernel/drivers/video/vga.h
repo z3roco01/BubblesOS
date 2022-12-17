@@ -3,8 +3,20 @@
 
 #include "../../misc/types.h"
 
-#define VGA_WIDTH  80
-#define VGA_HEIGHT 25
+#define VGA_WIDTH  320
+#define VGA_HEIGHT 200
+
+#define FONT_WIDHT  8
+#define FONT_HEIGHT 8
+
+#define FONT_BG 0x00
+#define FONT_FG 0x0F
+
+void vgaPutPix(uint32_t x, uint32_t y, uint8_t colour);
+void vgaDrawLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, uint8_t colour);
+void vgaDrawChar(uint32_t x, uint32_t y, char c);
+
+// OLD VGA TEXT MODE CODE
 
 typedef enum vgaColour {
     VGA_COLOUR_BLACK         = 0x00,
