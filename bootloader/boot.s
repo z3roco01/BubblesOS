@@ -33,11 +33,7 @@ start:
     mov ax, 0x2401
     int 0x15
 
-<<<<<<< HEAD
-    ; Set VGA text mode to mode 2
-=======
     ; Set VGA text mode to mode 13
->>>>>>> master
     mov ax, 0x13
     int 0x10
 
