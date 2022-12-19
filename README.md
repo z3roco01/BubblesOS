@@ -28,4 +28,4 @@ after compiling.
 - [ ] FAT12 VFS(half done)
 - [ ] Proper keyboard driver
 - [ ] ELF executer
-- [ ] Real graphics(not VGA text mode)
+- [X] Real graphics(not VGA text mode)
