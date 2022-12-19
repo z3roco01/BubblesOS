@@ -11,7 +11,6 @@
 
 void kmain() {
 //    termInit();
-
     termPrint("Kernel init.");
 
     picRemap(0x20, 0x28);

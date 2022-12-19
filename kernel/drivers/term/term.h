@@ -6,11 +6,13 @@
 #include "../ports/ports.h"
 #include "../../mm/mm.h"
 
+#define FONT_WIDTH  8
+#define FONT_HEIGHT 8
+
+#define FONT_BG 0x00
+#define FONT_FG 0x0F
+
 void clearScreen(void);
-void enableCursor(uint8_t cursorStart, uint8_t cursorEnd);
-void disableCursor(void);
-void moveCursor(int x, int y);
-uint16_t getCursorPos(void);
 void termInit(void);
 void termPutChar(char c);
 void termPrint(const char* str);
