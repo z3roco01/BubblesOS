@@ -24,6 +24,13 @@ void vgaDrawLine(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint8_t col
     }
 }
 
+void vgaDrawRect(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint8_t colour) {
+    vgaDrawLine(x0, y0, x1, y0, colour);
+    vgaDrawLine(x1, y0, x1, y1, colour);
+    vgaDrawLine(x1, y1, x0, y1, colour);
+    vgaDrawLine(x0, y1, x0, y0, colour);
+}
+
 void vgaDrawBitmap(uint32_t x, uint32_t y, uint32_t w, uint32_t h, void* bitmap, uint8_t fg, uint8_t bg) {
     for(uint32_t cy = 0; cy < w; ++cy) {
         for(uint32_t cx = 0; cx < h; ++cx)

@@ -9,7 +9,8 @@
 
 
 void vgaPutPix(uint32_t x, uint32_t y, uint8_t colour);
-void vgaDrawLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, uint8_t colour);
+void vgaDrawLine(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint8_t colour);
+void vgaDrawRect(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint8_t colour);
 void vgaDrawBitmap(uint32_t x, uint32_t y, uint32_t w, uint32_t h, void* bitmap, uint8_t fg, uint8_t bg);
 
 #endif
