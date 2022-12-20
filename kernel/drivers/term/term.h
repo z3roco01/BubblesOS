@@ -9,6 +9,9 @@
 #define FONT_WIDTH  8
 #define FONT_HEIGHT 8
 
+#define TERM_WIDTH  VGA_WIDTH/FONT_WIDTH
+#define TERM_HEIGHT VGA_HEIGHT/FONT_HEIGHT
+
 #define FONT_BG 0x00
 #define FONT_FG 0x0F
 

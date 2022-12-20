@@ -151,14 +151,14 @@ void termInit(void) {
 void termPutChar(char c) {
     switch(c) {
         case '\n':
-            if(++termRow == VGA_HEIGHT)
+            if(++termRow == TERM_HEIGHT)
                 termRow = 0;
             termCol = 0;
             break;
         case '\b':
-            if(--termCol >= VGA_WIDTH){
-                termCol = VGA_WIDTH-1;
-                if(--termRow > VGA_HEIGHT) {
+            if(--termCol >= TERM_WIDTH){
+                termCol = TERM_WIDTH-1;
+                if(--termRow > TERM_HEIGHT) {
                     termRow = 0;
                     termCol = 0;
                 }
@@ -170,9 +170,9 @@ void termPutChar(char c) {
             break;
         default:
             vgaDrawBitmap(termCol*FONT_WIDTH, termRow*FONT_HEIGHT, FONT_WIDTH, FONT_HEIGHT, font8x8[c], FONT_FG, FONT_BG);
-            if(++termCol == VGA_WIDTH) {
+            if(++termCol == TERM_WIDTH) {
                 termCol = 0;
-                if(++termRow == VGA_HEIGHT)
+                if(++termRow == TERM_HEIGHT)
                     termRow = 0;
             }
             break;

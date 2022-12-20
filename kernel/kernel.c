@@ -30,7 +30,7 @@ void kmain() {
     termPrint(".");
 
     ataDev_t* ataDev = ataIdentify();
-    termPrint(".\x02\n");
+    termPrint(".\n");
 
     vfsNode_t* ataNode = createAtaNode(ataDev);
 
