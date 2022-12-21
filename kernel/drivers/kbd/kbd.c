@@ -28,8 +28,47 @@ static const char KEYMAP[0xFF] = {
 };
 
 keyPress_t keysBuf[100];
-uint8_t bufPos = 0;
+uint8_t bufPos   = 0;
 uint8_t curFlags = 0;
+uint8_t getChr   = 0;
+uint8_t gotChr   = 0;
+
+char kbdPressGetChar(keyPress_t* kp) {
+    if(kp->chr >= 0x61 && kp->chr <= 0x7A) {
+        if((kp->flags & KP_SHIFT_MASK) != (kp->flags & KP_CAPS_MASK))
+            return kp->chr - 0x20;
+    }
+    return kp->chr;
+}
+
+char kbdGetChr(void) {
+    getChr = 1;
+    while(!gotChr) {
+        __asm__("nop");
+    }
+    getChr = 0;
+    gotChr = 0;
+    return kbdPressGetChar(&keysBuf[bufPos]);
+}
+
+// Blocks for a whole line, will only return len bytes
+void kbdGetLine(char* buf, uint32_t len) {
+    uint32_t pos = 0;
+    char c = kbdGetChr();
+    do {
+        buf[pos] = c;
+        pos++;
+        c = kbdGetChr();
+    }while(c != '\n');
+
+    if(pos > len) {
+        buf[len]   = '\n';
+        buf[len+1] = '\0';
+    }else {
+        buf[pos]   = '\n';
+        buf[pos+1] = '\0';
+    }
+}
 
 void kbdIsr(void) {
     keysBuf[bufPos].keycode = inb(0x60);
@@ -52,20 +91,8 @@ void kbdIsr(void) {
     }else {
         keysBuf[bufPos].flags   = curFlags;
 
-        char msg[2] = {0, 0};
-        if(keysBuf[bufPos].chr >= 0x61 && keysBuf[bufPos].chr <= 0x7A) {
-            if((keysBuf[bufPos].flags & KP_SHIFT_MASK) && (keysBuf[bufPos].flags & KP_CAPS_MASK))
-                msg[0] = keysBuf[bufPos].chr;
-            else if((keysBuf[bufPos].flags & KP_SHIFT_MASK) || (keysBuf[bufPos].flags & KP_CAPS_MASK))
-                msg[0] = keysBuf[bufPos].chr - 0x20;
-            else
-                msg[0] = keysBuf[bufPos].chr;
-
-        }else {
-            msg[0] = keysBuf[bufPos].chr;
-        }
-
-//        termPrint(msg);
+        if(getChr && !gotChr)
+            gotChr = 1;
     }
 
     picSendEoi(1);

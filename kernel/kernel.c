@@ -10,7 +10,8 @@
 #include "vfs/vfs.h"
 
 void kmain() {
-//    termInit();
+    termInit();
+
     termPrint("Kernel init.");
 
     picRemap(0x20, 0x28);
@@ -30,13 +31,13 @@ void kmain() {
     termPrint(".");
 
     ataDev_t* ataDev = ataIdentify();
-    termPrint(".\n");
+    termPrint(".");
 
     vfsNode_t* ataNode = createAtaNode(ataDev);
+    termPrint(".");
 
     fat12Fs_t* fat12Fs = fat12Init(ataNode);
+    termPrint(".\n");
 
-    //vgaDrawChar(0, 0, 'A');
-
-    while(1) {}
+    while(1) { }
 }

@@ -26,6 +26,7 @@ after compiling.
 - [X] Memory allocater(only basic allocator)
 - [X] VFS
 - [ ] FAT12 VFS(half done)
-- [ ] Proper keyboard driver
+- [X] Proper keyboard driver
+- [ ] BASIC interpreter
 - [ ] ELF executer
 - [X] Real graphics(not VGA text mode)

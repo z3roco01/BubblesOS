@@ -36,6 +36,8 @@ typedef struct keyPress {
     uint8_t flags;
 } keyPress_t;
 
+char kbdGetChr(void);
+void kbdGetLine(char* buf, uint32_t len);
 void kbdIsr(void);
 void kbdInit(void);
 
