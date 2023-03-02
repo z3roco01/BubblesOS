@@ -39,5 +39,9 @@ void kmain() {
     fat12Fs_t* fat12Fs = fat12Init(ataNode);
     termPrint(".\n");
 
-    while(1) { }
+    char* buf = malloc(1024);
+    while(1) {
+        kbdGetLine(buf, 1);
+        termPrint(buf);
+    }
 }

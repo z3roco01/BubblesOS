@@ -1,0 +1,3 @@
+[submodule "kernel/BASIC"]
+	path = kernel/BASIC
+	url = https://github.com/z3roco01/BASIC

@@ -140,7 +140,7 @@ static const char font8x8[128][8] = {
 void clearScreen(void) {
     for(uint16_t y = 0; y < VGA_HEIGHT; ++y) {
         for(uint16_t x = 0; x < VGA_WIDTH; ++x)
-            termBuf[y * VGA_HEIGHT + x] = 0x00;
+            termBuf[y * VGA_WIDTH + x] = FONT_BG;
     }
 }
 

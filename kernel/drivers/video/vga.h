@@ -6,8 +6,6 @@
 #define VGA_WIDTH  320
 #define VGA_HEIGHT 200
 
-
-
 void vgaPutPix(uint32_t x, uint32_t y, uint8_t colour);
 void vgaDrawLine(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint8_t colour);
 void vgaDrawRect(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint8_t colour);

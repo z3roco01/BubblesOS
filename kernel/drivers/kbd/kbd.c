@@ -44,6 +44,7 @@ char kbdPressGetChar(keyPress_t* kp) {
 char kbdGetChr(void) {
     getChr = 1;
     while(!gotChr) {
+        // nop needed
         __asm__("nop");
     }
     getChr = 0;
@@ -51,23 +52,20 @@ char kbdGetChr(void) {
     return kbdPressGetChar(&keysBuf[bufPos]);
 }
 
-// Blocks for a whole line, will only return len bytes
+// Blocks for a whole line, will only read len bytes
 void kbdGetLine(char* buf, uint32_t len) {
+    char c = 0;
     uint32_t pos = 0;
-    char c = kbdGetChr();
-    do {
-        buf[pos] = c;
-        pos++;
-        c = kbdGetChr();
-    }while(c != '\n');
-
-    if(pos > len) {
-        buf[len]   = '\n';
-        buf[len+1] = '\0';
-    }else {
-        buf[pos]   = '\n';
-        buf[pos+1] = '\0';
+    while((c = kbdGetChr()) != '\n' && pos < len-1) {
+        buf[pos++] = c;
     }
+
+    if(buf[pos-1] != '\n') {
+        while((c = kbdGetChr()) != '\n') {}
+        buf[pos++] = '\n';
+    }
+
+    buf[pos] = '\0';
 }
 
 void kbdIsr(void) {
