@@ -60,12 +60,13 @@ void kbdGetLine(char* buf, uint32_t len) {
         buf[pos++] = c;
     }
 
-    if(buf[pos-1] != '\n') {
+    /*if(buf[pos-1] != '\n') {
         while((c = kbdGetChr()) != '\n') {}
         buf[pos++] = '\n';
-    }
+    }*/
 
-    buf[pos] = '\0';
+    buf[pos++] = '\n';
+    buf[pos]   = '\0';
 }
 
 void kbdIsr(void) {
